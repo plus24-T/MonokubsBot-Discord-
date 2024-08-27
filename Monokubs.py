@@ -20,7 +20,7 @@ class CharaData:
     chara_ability:str=""#キャラ名（石田のコピー時ここを変えて参照する）
     ability_use:bool=True#キャラ能力使用状況（True：未使用、False：使用済み）
     num_of_items:int=0#所持アイテム数
-    item_1_id:int=0#所持アイテム一つ目
+    item_1_id:int=0#所持アイテム一つ目 intじゃ情報足りないので辞書咬ませてデータクラスとかになりそう
     item_2_id:int=0#所持アイテム二つ目
     votes:int=1#所持票数（投票無効時0にする）
     item_use:bool=1#各時間帯のアイテム使用権（Ture：未使用、False：使用済み）
@@ -54,7 +54,8 @@ role_name_to_para:dict = {
     "ザコケモノ":8,
     "絶望の残党":9
     }
-#キャラロール名からデータ格納変数名への変換辞書
+#キャラロール名からデータ格納変数名への変換辞書　要る？変数名直打ちすることないので要らないより
+#                                               個人へのデータの紐づけ方法要検討　メンバーidの方がよさげ？
 nick_to_data={
     "苗木誠":"naegi_data",
     "舞園さやか":"maizono_data",
@@ -109,11 +110,11 @@ initial_extensions = [
     "Hagakure_ability",
     "Yasuke"
 ]
-
+#botのインスタンス化と起動時の処理
 class MonokubsBot(commands.Bot):
     def __init__(self):
         super().__init__(
-            command_prefix=commands.when_mentioned_or('!'),# メンション若しくは!でコマンドを認識する
+            command_prefix=commands.when_mentioned_or('!'),# メンション若しくは!でコマンドを認識する　あんまり使わないけど
             intents=discord.Intents.all()# すべてのインテント権限をTureにする
             )
 
@@ -139,9 +140,9 @@ class MonokubsBot(commands.Bot):
         print(f'Logged in as {self.user} (ID: {self.user.id})')#ログインしたやでとターミナルに出力
         print('------')
 
-bot = MonokubsBot()#botのインスタンス化
+bot = MonokubsBot()
 
-#自動リネーム機能　及び　ロール付与に反応するやつ全般
+#自動リネーム機能　及び　ロール付与に反応するやつ全般　最終的に死亡時処理だけになりそう
 @bot.event 
 async def on_member_update(before:discord.Member, after:discord.Member):
     guild = before.guild
@@ -181,7 +182,7 @@ async def on_member_update(before:discord.Member, after:discord.Member):
 
 
 
-# キャラクターセレクト　1，2選択ボタン→セレクトメニュー
+# キャラクターセレクト　1，2選択ボタン→セレクトメニュー　そのうち最初から1、2、1バレ無、2バレ無のセレクト出す形にする
 
 class CharaSleMenu1(discord.ui.View): # UIキットを利用するためにdiscord.ui.Viewを継承する
     def __init__(self, timeout=180): # Viewにはtimeoutがあり、初期値は180(s)である
@@ -217,7 +218,7 @@ class CharaSleMenu1(discord.ui.View): # UIキットを利用するためにdisco
     async def select(self, interaction: discord.Interaction, select: discord.ui.Select):
         await interaction.user.add_roles(discord.utils.get(interaction.guild.roles, name=select.values[0]))
         nick_to_data[select.values[0]]=CharaData(chara_ability=select.values[0])
-        await interaction.user.add_roles(discord.utils.get(interaction.guild.roles, name="生存"))
+        await interaction.user.add_roles(discord.utils.get(interaction.guild.roles, name="生存"))#いずれ鯖からキャラロール消してここでリネームする
         await interaction.response.send_message("よくきたな、" + select.values[0] )
 
 class CharaSleMenu2(discord.ui.View): # UIキットを利用するためにdiscord.ui.Viewを継承する
@@ -354,10 +355,7 @@ class Punishment_poll_select(discord.ui.Select):
                 voting_results.clear()
                 await itx.followup.send("決戦投票",view=Punishment_poll(options=finalists))
                 
-
-
-
-class Punishment_poll(discord.ui.View):
+class Punishment_poll(discord.ui.View):#投票セレクトメニューに変数（候補リスト）渡すためのView
     def __init__(self, options: list[discord.SelectOption]):
         super().__init__(timeout=180)
         
@@ -366,7 +364,7 @@ class Punishment_poll(discord.ui.View):
 @bot.tree.command(name="make_punishment_poll",description="おしおき先の投票メニューを出します",guild=Test_GUILD)
 async def make_punishment_poll(itx:discord.Interaction):
     living_members = discord.utils.get(itx.guild.roles,name="生存").members
-    voting_destinations = []    
+    voting_destinations = []    #生存メンバーのリストから投票先候補のリストを作成
     for member in living_members:
         voting_destinations.append(discord.SelectOption(label=member.nick))
 
@@ -375,7 +373,7 @@ async def make_punishment_poll(itx:discord.Interaction):
         view=Punishment_poll(options=voting_destinations)
         )
 
-# ロールチェックコマンド
+# ロールチェックコマンド　最終的に生存、死亡、GM、管理者？、Bot専用ロールのみにするので機能しなくなる　W.I.P
 @bot.tree.command(name="check_role",description="対象者が該当ロールをもっているか判別します",guild=Test_GUILD)
 async def test(itx:discord.Interaction, *, member: discord.Member, role: discord.Role):
     if role in member.roles:
@@ -383,12 +381,12 @@ async def test(itx:discord.Interaction, *, member: discord.Member, role: discord
     else:
         await itx.response.send_message(f"{member.nick} は {role.name} ロールを持っていません。")
 
-# エクステンションリロードする奴
+# エクステンションリロードする奴　リファクタリング不十分で活かしきれてないやつ
 @bot.tree.command(name="ext_reload",description="(開発用)エクステンションをリロードします",guild=Test_GUILD)
 
 async def ext_reload(
     itx:discord.Interaction,
-    ext_name:Literal[
+    ext_name:Literal[#initial_extentionsから引っ張ってきたいけどなんかダメそう
         "ext_test",
         "Hagakure_ability",
         "Yasuke"
@@ -396,7 +394,7 @@ async def ext_reload(
 ):
     await bot.reload_extension(ext_name)
     try:
-        synced = await bot.tree.sync(guild=Test_GUILD)# コマンドをDiscordに同期、鯖指定で反映を即時にしている
+        synced = await bot.tree.sync(guild=Test_GUILD)#コマンド同期しとかないとオートフィルでもうない変数要求されたりするので
         print(f"synced {len(synced)} commands ")
     except Exception as e:
         print(e)
