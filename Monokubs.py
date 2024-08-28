@@ -1,11 +1,11 @@
 import os
 import collections
 import dataclasses
+from cogs import global_value as g
 from dotenv import load_dotenv
 from typing import List, Literal
 import discord
 from discord.ext import commands
-from cogs import translation
 
 load_dotenv()#環境変数の読み込み
 
@@ -29,6 +29,55 @@ class CharaData:
     unidentifiable:bool=False#判別不可（True：されない、False：される）
     escorted:bool=False#護衛されているか（True：されている、False：されていない）
     position=int#席の位置、生存人数の剰余で隣り合っているか判定する
+
+#キャラロール名からデータ格納変数名への変換辞書　要る？変数名直打ちすることないので要らないより
+#                                               個人へのデータの紐づけ方法要検討　メンバーidの方がよさげ？
+nick_to_data={
+    "苗木誠":"CC_02",
+    "舞園さやか":"CC_03",
+    "桑田怜恩":"CC_04",
+    "霧切響子":"CC_05",
+    "十神白夜":"CC_06",
+    "山田一二三":"CC_07",
+    "大和田紋土":"CC_08",
+    "腐川冬子":"CC_09",
+    "セレスティアルーデンベルク":"CC_10",
+    "朝日奈葵":"CC_11",
+    "石丸清多夏":"CC_12",
+    "大神さくら":"CC_13",
+    "葉隠康比呂":"CC_14",
+    "江ノ島盾子":"CC_15",
+    "不二咲千尋":"CC_16",
+    "ジェノサイダー翔":"CC_17",
+    "戦刃むくろ":"CC_18",
+    "江ノ島盾子：絶望":"CC_19",
+    "霧切響子：カップ麵":"MCC_01",
+    "石丸清多夏：石田":"MCC_08",
+    "江ノ島盾子：王冠":"MCC_09",
+    "日向創":"CC_20",
+    "狛枝凪斗":"CC_21",
+    "田中眼蛇夢":"CC_22",
+    "左右田和一":"CC_23",
+    "十神白夜：ジャバウォック島のすがた":"CC_24",
+    "花村輝々":"CC_25",
+    "弐大猫丸":"CC_26",
+    "九頭龍冬彦":"CC_27",
+    "終里赤音":"CC_28",
+    "七海千秋":"CC_29",
+    "ソニアネヴァーマインド":"CC_30",
+    "西園寺日寄子":"CC_31",
+    "小泉真昼":"CC_32",
+    "罪木蜜柑":"CC_33",
+    "澪田唯吹":"CC_34",
+    "辺古山ペコ":"CC_35",
+    "狛枝凪斗：絶望":"MCC_02",
+    "左右田和一：楳図かずお画風":"MCC_03",
+    "十神白夜：腕組み":"MCC_05",
+    "花村輝々：鼻血":"MCC_07",
+    "弐大猫丸：メカ":"MCC_10",
+    "七海千秋：唾吐き":"MCC_06",
+    "西園寺日寄子：てへぺろ":"MCC_04"
+}
 
 #キャラの役職パラメータと役職名の変換辞書
 role_para_to_name:dict = {
@@ -171,7 +220,8 @@ class CharaSleMenu1(discord.ui.View): # UIキットを利用するためにdisco
     )
     async def select(self, interaction: discord.Interaction, select: discord.ui.Select):
         await interaction.user.add_roles(discord.utils.get(interaction.guild.roles, name=select.values[0]))
-        nick_to_data[select.values[0]]=CharaData(chara_ability=select.values[0])
+        Cdata=nick_to_data[select.values[0]]
+        exec(f"g.{Cdata}=CharaData(chara_ability=select.values[0])")
         await interaction.user.add_roles(discord.utils.get(interaction.guild.roles, name="生存"))#いずれ鯖からキャラロール消してここでリネームする
         await interaction.response.send_message("よくきたな、" + select.values[0] )
 
