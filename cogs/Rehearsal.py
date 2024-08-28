@@ -43,7 +43,7 @@ class Rehearsal(commands.Cog):#コマンド名、頭大文字でクラス作成
         for member in living_members:
             select_op_living_members.append(discord.SelectOption(label=member.nick))
         await itx.response.send_message("クロが下見の対象を選択しています")
-        await discord.utils.get(itx.guild.channels,name="クロ").send(
+        await discord.utils.get(itx.guild.channels,name="クロ").send(#最終的には役職チャンネルなくして個人のプライベートチャンネルに投稿するように変更予定
             "下見の対象を選択してください",
             view=Rehearsal_View(options=select_op_living_members)
             )
