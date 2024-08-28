@@ -109,7 +109,7 @@ initial_extensions = [
     "ext_test",
     "Hagakure_ability",
     "Yasuke",
-    "Reearsal"
+    "Rehearsal"
 ]
 #botのインスタンス化と起動時の処理
 class MonokubsBot(commands.Bot):
@@ -394,7 +394,7 @@ async def ext_reload(
         "Rehearsal"
     ]
 ):
-    await bot.reload_extension(ext_name)
+    await bot.reload_extension(f"cogs.{ext_name}")
     try:
         synced = await bot.tree.sync(guild=Test_GUILD)#コマンド同期しとかないとオートフィルでもうない変数要求されたりするので
         print(f"synced {len(synced)} commands ")

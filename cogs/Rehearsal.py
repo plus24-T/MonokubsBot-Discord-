@@ -17,17 +17,17 @@ class Rehearsal_Select(discord.ui.Select):
             options=options
             )
     async def callback(self, itx: discord.Interaction):
-        await itx.response.edit_message(f"『{self.values[0]}』の部屋を荒らしました")
+        await itx.response.send_message(f"『{self.values[0]}』の部屋を荒らしました")
         await discord.utils.get(itx.guild.channels,name=self.values[0]).send(
             "あなたの部屋が荒らされました、手持ちのアイテムを1枚選択して裏向きのまま捨てて下さい"
             )
         await discord.utils.get(itx.guild.channels,name="食堂").send(f"{self.values[0]}の部屋が荒らされました")
 
 class Rehearsal_View(discord.ui.View):
-    def __init__(self,living_menbers:list[discord.SelectOption]):
+    def __init__(self,options:list[discord.SelectOption]):
         super().__init__(timeout=180)
 
-        self.add_item(options=living_menbers)
+        self.add_item(Rehearsal_Select(options=options))
 
 class Rehearsal(commands.Cog):#コマンド名、頭大文字でクラス作成
     def __init__(self, bot:commands.Bot):
@@ -39,13 +39,13 @@ class Rehearsal(commands.Cog):#コマンド名、頭大文字でクラス作成
             )
     async def rehearsal(self, itx:discord.Interaction):#ここが処理内容、必要な引数とか設定する
         living_members = discord.utils.get(itx.guild.roles,name="生存").members
-        voting_destinations = []    #生存メンバーのリストから投票先候補のリストを作成
+        select_op_living_members = []    #生存メンバーのリストから選択候補のリストを作成
         for member in living_members:
-            voting_destinations.append(discord.SelectOption(label=member.nick))
+            select_op_living_members.append(discord.SelectOption(label=member.nick))
         await itx.response.send_message("クロが下見の対象を選択しています")
         await discord.utils.get(itx.guild.channels,name="クロ").send(
             "下見の対象を選択してください",
-            view=Rehearsal_View(living_menbers=living_members)
+            view=Rehearsal_View(options=select_op_living_members)
             )
 
 async def setup(bot:commands.Bot):
