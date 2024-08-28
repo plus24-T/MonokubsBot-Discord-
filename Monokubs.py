@@ -109,6 +109,7 @@ initial_extensions = [
     "ext_test",
     "Hagakure_ability",
     "Yasuke"
+    "Reearsal"
 ]
 #botのインスタンス化と起動時の処理
 class MonokubsBot(commands.Bot):
@@ -330,7 +331,7 @@ async def hello(itx: discord.Interaction):
 voting_results = []
 
 class Punishment_poll_select(discord.ui.Select): 
-    def __init__(self, options: List[discord.SelectOption]) -> None:
+    def __init__(self, options: list[discord.SelectOption]) -> None:
         super().__init__(
             placeholder="投票先を選択",
             options=options
@@ -340,20 +341,20 @@ class Punishment_poll_select(discord.ui.Select):
         voting_results.append(value)
         await itx.response.send_message(f"『{value}』に投票しました、集計をお待ちください",ephemeral=True)
         if len(voting_results) == len(discord.utils.get(itx.guild.roles,name="生存").members):
-            counted_result=collections.Counter(voting_results)
-            saita_tokuhyo=counted_result.most_common()[0][1]
-            tokuhyo = counted_result.values()
-            if list(tokuhyo).count(saita_tokuhyo) == 1:
+            counted_result=collections.Counter(voting_results)#(投票先,得票数)のリストを作成
+            saita_tokuhyo=counted_result.most_common()[0][1]#得票数多い順に並べ替えて最多得票数を取得
+            tokuhyo = counted_result.values()#得票数だけのリストを取得
+            if list(tokuhyo).count(saita_tokuhyo) == 1:#得票数の中に最多得票数が一つだけなら、つまり単独1位なら
                 await itx.followup.send(f"きょうの〈おしおき〉は『{counted_result.most_common()[0][0]}』に決まりました")
                 await discord.utils.get(itx.guild.members,nick=counted_result.most_common()[0][0]).remove_roles(discord.utils.get(itx.guild.roles,name="生存"))
                 await discord.utils.get(itx.guild.members,nick=counted_result.most_common()[0][0]).add_roles(discord.utils.get(itx.guild.roles,name="死亡"))
                 voting_results.clear()
-            else:
+            else:#単独一位とちゃうかったら
                 finalists=[]
-                for i in range(0,list(tokuhyo).count(saita_tokuhyo)):
-                    finalists.append(discord.SelectOption(label=counted_result.most_common()[i][0]))
+                for i in range(0,list(tokuhyo).count(saita_tokuhyo)):#[0,1,...,同率1位の数-1]に対してfor
+                    finalists.append(discord.SelectOption(label=counted_result.most_common()[i][0]))#得票数i+1位の候補をリストに追加
                 voting_results.clear()
-                await itx.followup.send("決戦投票",view=Punishment_poll(options=finalists))
+                await itx.followup.send("決戦投票",view=Punishment_poll(options=finalists))#候補者差し替えて再度投票メニュー出す
                 
 class Punishment_poll(discord.ui.View):#投票セレクトメニューに変数（候補リスト）渡すためのView
     def __init__(self, options: list[discord.SelectOption]):
@@ -390,6 +391,7 @@ async def ext_reload(
         "ext_test",
         "Hagakure_ability",
         "Yasuke"
+        "Rehearsal"
     ]
 ):
     await bot.reload_extension(ext_name)
