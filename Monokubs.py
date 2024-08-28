@@ -110,7 +110,6 @@ initial_extensions = [
     "Hagakure_ability",
     "Yasuke",
     "Rehearsal",
-    "AlterEgo_ability"
 ]
 #botのインスタンス化と起動時の処理
 class MonokubsBot(commands.Bot):
@@ -219,7 +218,7 @@ class CharaSleMenu1(discord.ui.View): # UIキットを利用するためにdisco
     )
     async def select(self, interaction: discord.Interaction, select: discord.ui.Select):
         await interaction.user.add_roles(discord.utils.get(interaction.guild.roles, name=select.values[0]))
-        nick_to_data[select.values[0]]=CharaData(chara_ability=select.values[0])
+        globals()[nick_to_data[select.values[0]]]=CharaData(chara_ability=select.values[0])
         await interaction.user.add_roles(discord.utils.get(interaction.guild.roles, name="生存"))#いずれ鯖からキャラロール消してここでリネームする
         await interaction.response.send_message("よくきたな、" + select.values[0] )
 
@@ -311,8 +310,9 @@ class RoleSleMenu(discord.ui.View):
     )
     async def select(self, itx: discord.Interaction, select: discord.ui.Select):
         await itx.user.add_roles(discord.utils.get(itx.guild.roles, name=select.values[0]))
-        nick_to_data[itx.user.nick].role.name=select.values[0]
-        nick_to_data[itx.user.nick].role.id=role_name_to_para[select.values[0]]
+        globals().get(nick_to_data[itx.user.nick]).role.name=select.values[0]
+        globals().get(nick_to_data[itx.user.nick]).role.id=role_name_to_para[select.values[0]]
+        print(nick_to_data[itx.user.nick])
         if 6 <= role_name_to_para[select.values[0]] <= 7:
             await discord.utils.get(itx.guild.channels,name="裏切者").send(f"『{itx.user.nick}』は『{select.values[0]}』です")
         await itx.response.send_message("オマエニ、" + select.values[0] + " ノ、ロールヲ付与シマシタ", ephemeral=True)
@@ -393,7 +393,6 @@ async def ext_reload(
         "Hagakure_ability",
         "Yasuke",
         "Rehearsal",
-        "AlterEgo_ability"
     ]
 ):
     await bot.reload_extension(f"cogs.{ext_name}")
@@ -403,5 +402,52 @@ async def ext_reload(
     except Exception as e:
         print(e)
     await itx.response.send_message(f"{ext_name}のリロードが完了しました",ephemeral=True)
+
+#アルターエゴの判別能力
+class AlEgo_Select(discord.ui.Select):
+    def __init__(self,options:list[discord.SelectOption]):
+        super().__init__(
+            placeholder="対象を選択",
+            options=options
+            )
+    async def callback(self, itx: discord.Interaction):
+        if len(discord.utils.get(itx.guild.roles,name="死亡").members)==0:
+           despair_threshold=3
+        else:
+           despair_threshold=2
+        role_id = globals().get(nick_to_data[self.values[0]]).role.id#ここが動かん、データクラスをこのセレクトメニューに渡す方法は？
+        if role_id <=despair_threshold:
+            await itx.response.send_message(f"『{self.values[0]}』は希望〈キボウ〉サイドです")
+        else:
+            if role_id != 6:
+                await itx.response.send_message(f"『{self.values[0]}』は絶望〈ゼツボウ〉サイドです")
+            else:
+                #本当はここに絶望の残党の有無生存判定での分岐を追加する
+                await itx.response.send_message(f"『{self.values[0]}』は絶望〈ゼツボウ〉サイドです")
+
+        
+        
+
+class AlEgo_View(discord.ui.View):
+    def __init__(self,options:list[discord.SelectOption]):
+        super().__init__(timeout=180)
+
+        self.add_item(AlEgo_Select(options=options))
+
+@bot.tree.command(
+            name="alterego_ability",#coomand_nameがコマンドになる
+            description="アルターエゴの判別対象を選択、判別結果を返します",#コマンドリストに表示される説明文
+            guild=Test_GUILD
+            )
+async def alterego_ability(itx:discord.Interaction):#ここが処理内容、必要な引数とか設定する
+    living_members = discord.utils.get(itx.guild.roles,name="生存").members
+    select_op_living_members = []    #生存メンバーのリストから選択候補のリストを作成
+    for member in living_members:
+        select_op_living_members.append(discord.SelectOption(label=member.nick))#判別不可(モノクマのヘアゴム)対象を取り除く工程は未実装
+    await itx.response.send_message("アルターエゴが判別対象を選択しています")
+    await discord.utils.get(itx.guild.channels,name="アルターエゴ").send(#最終的には役職チャンネルなくして個人のプライベートチャンネルに投稿するように変更予定
+        "判別の対象を選択してください",
+        view=AlEgo_View(options=select_op_living_members)
+        )
 
 bot.run(os.getenv("TOKEN"))
