@@ -218,7 +218,7 @@ class CharaSleMenu1(discord.ui.View): # UIキットを利用するためにdisco
     )
     async def select(self, interaction: discord.Interaction, select: discord.ui.Select):
         await interaction.user.add_roles(discord.utils.get(interaction.guild.roles, name=select.values[0]))
-        globals()[nick_to_data[select.values[0]]]=CharaData(chara_ability=select.values[0])
+        nick_to_data[select.values[0]]=CharaData(chara_ability=select.values[0])
         await interaction.user.add_roles(discord.utils.get(interaction.guild.roles, name="生存"))#いずれ鯖からキャラロール消してここでリネームする
         await interaction.response.send_message("よくきたな、" + select.values[0] )
 
@@ -310,8 +310,8 @@ class RoleSleMenu(discord.ui.View):
     )
     async def select(self, itx: discord.Interaction, select: discord.ui.Select):
         await itx.user.add_roles(discord.utils.get(itx.guild.roles, name=select.values[0]))
-        globals().get(nick_to_data[itx.user.nick]).role.name=select.values[0]
-        globals().get(nick_to_data[itx.user.nick]).role.id=role_name_to_para[select.values[0]]
+        nick_to_data[itx.user.nick].role.name=select.values[0]
+        nick_to_data[itx.user.nick].role.id=role_name_to_para[select.values[0]]
         print(nick_to_data[itx.user.nick])
         if 6 <= role_name_to_para[select.values[0]] <= 7:
             await discord.utils.get(itx.guild.channels,name="裏切者").send(f"『{itx.user.nick}』は『{select.values[0]}』です")
@@ -415,7 +415,7 @@ class AlEgo_Select(discord.ui.Select):
            despair_threshold=3
         else:
            despair_threshold=2
-        role_id = globals().get(nick_to_data[self.values[0]]).role.id#ここが動かん、データクラスをこのセレクトメニューに渡す方法は？
+        role_id = nick_to_data[self.values[0]].role.id
         if role_id <=despair_threshold:
             await itx.response.send_message(f"『{self.values[0]}』は希望〈キボウ〉サイドです")
         else:
