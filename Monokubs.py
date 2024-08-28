@@ -5,6 +5,7 @@ from dotenv import load_dotenv
 from typing import List, Literal
 import discord
 from discord.ext import commands
+from cogs import translation
 
 load_dotenv()#環境変数の読み込み
 
@@ -54,62 +55,14 @@ role_name_to_para:dict = {
     "ザコケモノ":8,
     "絶望の残党":9
     }
-#キャラロール名からデータ格納変数名への変換辞書　要る？変数名直打ちすることないので要らないより
-#                                               個人へのデータの紐づけ方法要検討　メンバーidの方がよさげ？
-nick_to_data={
-    "苗木誠":"naegi_data",
-    "舞園さやか":"maizono_data",
-    "桑田怜恩":"kuwata_data",
-    "霧切響子":"kirigiri_data",
-    "十神白夜":"togami_data",
-    "山田一二三":"yamada_data",
-    "大和田紋土":"oowada_data",
-    "腐川冬子":"hukawa_data",
-    "セレスティアルーデンベルク":"seresu_data",
-    "朝日奈葵":"asahina_data",
-    "石丸清多夏":"ishimaru_data",
-    "大神さくら":"oogami_data",
-    "葉隠康比呂":"hagakure_data",
-    "江ノ島盾子":"enoshima_data",
-    "不二咲千尋":"hujisaki_data",
-    "ジェノサイダー翔":"syo_data",
-    "戦刃むくろ":"ikusaba_data",
-    "江ノ島盾子：絶望":"enoshima_despair_dta",
-    "霧切響子：カップ麵":"kirigiri_m_data",
-    "石丸清多夏：石田":"isida_data",
-    "江ノ島盾子：王冠":"enoshima_m_data",
-    "日向創":"hinata_data",
-    "狛枝凪斗":"komaeda_data",
-    "田中眼蛇夢":"tanaka_data",
-    "左右田和一":"souda_data",
-    "十神白夜：ジャバウォック島のすがた":"togami_2_data",
-    "花村輝々":"hanamura_data",
-    "弐大猫丸":"nidai_data",
-    "九頭龍冬彦":"kuzuryu_data",
-    "終里赤音":"owari_data",
-    "七海千秋":"nanami:data",
-    "ソニアネヴァーマインド":"sonia_data",
-    "西園寺日寄子":"saionji_data",
-    "小泉真昼":"koizumi_data",
-    "罪木蜜柑":"tsumiki_data",
-    "澪田唯吹":"mioda_data",
-    "辺古山ペコ":"pekoyama_data",
-    "狛枝凪斗：絶望":"komaeda_m_data",
-    "左右田和一：楳図かずお画風":"souda_m_data",
-    "十神白夜：腕組み":"togami_m_data",
-    "花村輝々：鼻血":"hanamura_m_data",
-    "弐大猫丸：メカ":"nidai_m_data",
-    "七海千秋：唾吐き":"nanami_m_data",
-    "西園寺日寄子：てへぺろ":"saionji_m_data"
-}
-
 
         # 読み込むcogsのリストを作る
 initial_extensions = [
     "ext_test",
     "Hagakure_ability",
     "Yasuke",
-    "Rehearsal"
+    "Rehearsal",
+    "AlterEgo_ability"
 ]
 #botのインスタンス化と起動時の処理
 class MonokubsBot(commands.Bot):
@@ -164,7 +117,7 @@ async def on_member_update(before:discord.Member, after:discord.Member):
     #自動リネーム
     for role in added_roles:
         if ROLE_START <= role <= ROLE_END:
-            try:
+            try:#鯖製作者の表示名変更権限はどうやっても得られないためtryでエラー回避
                 await after.edit(nick=role.name)
                 break
             except Exception as e:
@@ -391,7 +344,8 @@ async def ext_reload(
         "ext_test",
         "Hagakure_ability",
         "Yasuke",
-        "Rehearsal"
+        "Rehearsal",
+        "AlterEgo_ability"
     ]
 ):
     await bot.reload_extension(f"cogs.{ext_name}")
