@@ -1,7 +1,6 @@
 import os
 import collections
 import dataclasses
-from cogs import global_value as g
 from dotenv import load_dotenv
 from typing import List, Literal
 import discord
@@ -220,8 +219,7 @@ class CharaSleMenu1(discord.ui.View): # UIキットを利用するためにdisco
     )
     async def select(self, interaction: discord.Interaction, select: discord.ui.Select):
         await interaction.user.add_roles(discord.utils.get(interaction.guild.roles, name=select.values[0]))
-        Cdata=nick_to_data[select.values[0]]
-        exec(f"g.{Cdata}=CharaData(chara_ability=select.values[0])")
+        nick_to_data[select.values[0]]=CharaData(chara_ability=select.values[0])
         await interaction.user.add_roles(discord.utils.get(interaction.guild.roles, name="生存"))#いずれ鯖からキャラロール消してここでリネームする
         await interaction.response.send_message("よくきたな、" + select.values[0] )
 

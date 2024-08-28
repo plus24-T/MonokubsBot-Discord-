@@ -1,10 +1,10 @@
 import os 
+import dataclasses
 import discord.context_managers
 from dotenv import load_dotenv
 import discord
 from discord import app_commands
 from discord.ext import commands
-import global_value as g
 
 load_dotenv()
 
@@ -68,7 +68,7 @@ class AlEgo_Select(discord.ui.Select):
            despair_threshold=3
         else:
            despair_threshold=4
-        exec(f"role_id=g.{nick_to_data[self.values[0]]}")
+        role_id = nick_to_data[self.values[0]].role.id#ここが動かん、データクラスをこのセレクトメニューに渡す方法は？
         if role_id <=despair_threshold:
             await itx.response.send_message(f"『{self.values[0]}』は希望〈キボウ〉サイドです")
         else:
