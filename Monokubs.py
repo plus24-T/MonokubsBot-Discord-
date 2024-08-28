@@ -108,7 +108,7 @@ nick_to_data={
 initial_extensions = [
     "ext_test",
     "Hagakure_ability",
-    "Yasuke"
+    "Yasuke",
     "Reearsal"
 ]
 #botのインスタンス化と起動時の処理
@@ -390,7 +390,7 @@ async def ext_reload(
     ext_name:Literal[#initial_extentionsから引っ張ってきたいけどなんかダメそう
         "ext_test",
         "Hagakure_ability",
-        "Yasuke"
+        "Yasuke",
         "Rehearsal"
     ]
 ):
