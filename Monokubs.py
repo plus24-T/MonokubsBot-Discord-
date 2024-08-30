@@ -269,7 +269,11 @@ class CharaSleMenu2(discord.ui.View): # UIキットを利用するためにdisco
             await interaction.user.edit(nick=select.values[0])
         except Exception as e:
             print(e)
-        await interaction.response.send_message("よくきたな、" + select.values[0] )
+        await interaction.response.send_message(
+            f"よくきたな{select.values[0]}\nさっさと"
+            f"{discord.utils.get(interaction.guild.channels,name=select.values[0]).mention}"
+            "に移動してロールを登録してくるんだな"
+            )
 
 class CharaSleMenuC1(discord.ui.View): # UIキットを利用するためにdiscord.ui.Viewを継承する
     def __init__(self): # Viewにはtimeoutがあり、初期値は180(s)である
@@ -305,7 +309,11 @@ class CharaSleMenuC1(discord.ui.View): # UIキットを利用するためにdisc
             await interaction.user.edit(nick=select.values[0])
         except Exception as e:
             print(e)
-        await interaction.response.send_message("よくきたな、" + select.values[0] )
+        await interaction.response.send_message(
+            f"よくきたな{select.values[0]}\nさっさと"
+            f"{discord.utils.get(interaction.guild.channels,name=select.values[0]).mention}"
+            "に移動してロールを登録してくるんだな"
+            )
 
 class CharaSleMenuC2(discord.ui.View): # UIキットを利用するためにdiscord.ui.Viewを継承する
     def __init__(self): # Viewにはtimeoutがあり、初期値は180(s)である
@@ -342,7 +350,11 @@ class CharaSleMenuC2(discord.ui.View): # UIキットを利用するためにdisc
             await interaction.user.edit(nick=select.values[0])
         except Exception as e:
             print(e)
-        await interaction.response.send_message("よくきたな、" + select.values[0] )
+        await interaction.response.send_message(
+            f"よくきたな{select.values[0]}\nさっさと"
+            f"{discord.utils.get(interaction.guild.channels,name=select.values[0]).mention}"
+            "に移動してロールを登録してくるんだな"
+            )
 
 @bot.tree.command(name="monotaro",
                   description="キャラクターを選択し、Botに登録するメニューを出します",
