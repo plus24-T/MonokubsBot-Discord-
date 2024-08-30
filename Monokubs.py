@@ -124,7 +124,10 @@ class MonokubsBot(commands.Bot):
     async def setup_hook(self) -> None:
 
         self.add_view(RoleSleMenu())# view(ボタンやセレクトメニュー)のBotへの取り込み
-        self.add_view(CharaSleMenu())
+        self.add_view(CharaSleMenu1())
+        self.add_view(CharaSleMenu2())
+        self.add_view(CharaSleMenuC1())
+        self.add_view(CharaSleMenuC2())
         
         for cog in initial_extensions:
             await self.load_extension(f"cogs.{cog}")# コマンドやイベント処理のBotへの取り込み
@@ -177,10 +180,8 @@ async def on_member_update(before:discord.Member, after:discord.Member):
             await discord.utils.get(guild.channels,name="食堂").send(f"『{after.nick}』はアルターエゴでした")
 
 
-
-# キャラクターセレクト　1，2選択ボタン→セレクトメニュー　そのうち最初から1、2、1バレ無、2バレ無のセレクト出す形にする
-
-class CharaSleMenu(discord.ui.View): # UIキットを利用するためにdiscord.ui.Viewを継承する
+# キャラクターセレクト
+class CharaSleMenu1(discord.ui.View): # UIキットを利用するためにdiscord.ui.Viewを継承する
     def __init__(self): # Viewにはtimeoutがあり、初期値は180(s)である
         super().__init__(timeout=None)
 
@@ -210,15 +211,21 @@ class CharaSleMenu(discord.ui.View): # UIキットを利用するためにdiscor
             discord.SelectOption(label="石丸清多夏：石田"),
             discord.SelectOption(label="江ノ島盾子：王冠"),
         ],
-        row=2,
         custom_id="charasle1"
     )
     async def select(self, interaction: discord.Interaction, select: discord.ui.Select):
         await interaction.user.add_roles(discord.utils.get(interaction.guild.roles, name=select.values[0]))
         nick_to_data[select.values[0]]=CharaData(chara_ability=select.values[0])
         await interaction.user.add_roles(discord.utils.get(interaction.guild.roles, name="生存"))
-        await interaction.user.edit(nick=select.values[0])
+        try:
+            await interaction.user.edit(nick=select.values[0])
+        except Exception as e:
+            print(e)
         await interaction.response.send_message("よくきたな、" + select.values[0] )
+
+class CharaSleMenu2(discord.ui.View): # UIキットを利用するためにdiscord.ui.Viewを継承する
+    def __init__(self): # Viewにはtimeoutがあり、初期値は180(s)である
+        super().__init__(timeout=None)
 
     @discord.ui.select(
         cls=discord.ui.Select,
@@ -248,15 +255,21 @@ class CharaSleMenu(discord.ui.View): # UIキットを利用するためにdiscor
             discord.SelectOption(label="七海千秋：唾吐き"),
             discord.SelectOption(label="西園寺日寄子：てへぺろ"),
         ],
-        row=3,
         custom_id="charasle2"
     )
     async def select(self, interaction: discord.Interaction, select: discord.ui.Select):
         await interaction.user.add_roles(discord.utils.get(interaction.guild.roles, name=select.values[0]))
         nick_to_data[select.values[0]]=CharaData(chara_ability=select.values[0])
         await interaction.user.add_roles(discord.utils.get(interaction.guild.roles, name="生存"))
-        await interaction.user.edit(nick=select.values[0])
+        try:
+            await interaction.user.edit(nick=select.values[0])
+        except Exception as e:
+            print(e)
         await interaction.response.send_message("よくきたな、" + select.values[0] )
+
+class CharaSleMenuC1(discord.ui.View): # UIキットを利用するためにdiscord.ui.Viewを継承する
+    def __init__(self): # Viewにはtimeoutがあり、初期値は180(s)である
+        super().__init__(timeout=None)
 
     @discord.ui.select(
         cls=discord.ui.Select,
@@ -278,15 +291,21 @@ class CharaSleMenu(discord.ui.View): # UIキットを利用するためにdiscor
             discord.SelectOption(label="江ノ島盾子"),
             discord.SelectOption(label="不二咲千尋"),
         ],
-        row=0,
         custom_id="charaslelessbare1"
     )
     async def select(self, interaction: discord.Interaction, select: discord.ui.Select):
         await interaction.user.add_roles(discord.utils.get(interaction.guild.roles, name=select.values[0]))
         nick_to_data[select.values[0]]=CharaData(chara_ability=select.values[0])
         await interaction.user.add_roles(discord.utils.get(interaction.guild.roles, name="生存"))
-        await interaction.user.edit(nick=select.values[0])
+        try:
+            await interaction.user.edit(nick=select.values[0])
+        except Exception as e:
+            print(e)
         await interaction.response.send_message("よくきたな、" + select.values[0] )
+
+class CharaSleMenuC2(discord.ui.View): # UIキットを利用するためにdiscord.ui.Viewを継承する
+    def __init__(self): # Viewにはtimeoutがあり、初期値は180(s)である
+        super().__init__(timeout=None)
 
     @discord.ui.select(
         cls=discord.ui.Select,
@@ -309,14 +328,16 @@ class CharaSleMenu(discord.ui.View): # UIキットを利用するためにdiscor
             discord.SelectOption(label="澪田唯吹"),
             discord.SelectOption(label="辺古山ペコ"),
         ],
-        row=1,
         custom_id="chareslelessbare2"
     )
     async def select(self, interaction: discord.Interaction, select: discord.ui.Select):
         await interaction.user.add_roles(discord.utils.get(interaction.guild.roles, name=select.values[0]))
         nick_to_data[select.values[0]]=CharaData(chara_ability=select.values[0])
         await interaction.user.add_roles(discord.utils.get(interaction.guild.roles, name="生存"))
-        await interaction.user.edit(nick=select.values[0])
+        try:
+            await interaction.user.edit(nick=select.values[0])
+        except Exception as e:
+            print(e)
         await interaction.response.send_message("よくきたな、" + select.values[0] )
 
 @bot.tree.command(name="monotaro",
@@ -328,8 +349,11 @@ async def chara_select(itx:discord.Interaction):
         title="キャラクター選択",
         description="おはっくまー！\nオマエはどちらから来た誰さん？\n\n（キャラカードを参照し、\n登場作品に対応したメニューからキャラクターを選択）"
         )
-    view = CharaSleMenu()
-    await itx.response.send_message(embed=embedtxt,view=view)
+
+    await itx.response.send_message(embed=embedtxt,view=CharaSleMenuC1())
+    await itx.followup.send(view=CharaSleMenuC2())
+    await itx.followup.send(view=CharaSleMenu1())
+    await itx.followup.send(view=CharaSleMenu2())
 
 # 役職ロールセレクトメニュー
 class RoleSleMenu(discord.ui.View):
