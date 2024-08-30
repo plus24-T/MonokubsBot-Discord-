@@ -128,7 +128,7 @@ class MonokubsBot(commands.Bot):
         self.add_view(CharaSleMenu2())
         self.add_view(CharaSleMenuC1())
         self.add_view(CharaSleMenuC2())
-        
+
         for cog in initial_extensions:
             await self.load_extension(f"cogs.{cog}")# コマンドやイベント処理のBotへの取り込み
         try:
@@ -221,7 +221,8 @@ class CharaSleMenu1(discord.ui.View): # UIキットを利用するためにdisco
             await interaction.user.edit(nick=select.values[0])
         except Exception as e:
             print(e)
-        await interaction.response.send_message("よくきたな、" + select.values[0] )
+        await interaction.response.send_message(
+            f"よくきたな{select.values[0]}\nさっさと{discord.utils.get(interaction.guild.channels,name=select.values[0]).mention}に移動してロールを登録してくるんだな")
 
 class CharaSleMenu2(discord.ui.View): # UIキットを利用するためにdiscord.ui.Viewを継承する
     def __init__(self): # Viewにはtimeoutがあり、初期値は180(s)である
