@@ -124,7 +124,8 @@ class MonokubsBot(commands.Bot):
     async def setup_hook(self) -> None:
 
         self.add_view(RoleSleMenu())# view(ボタンやセレクトメニュー)のBotへの取り込み
-
+        self.add_view(CharaSleMenu())
+        
         for cog in initial_extensions:
             await self.load_extension(f"cogs.{cog}")# コマンドやイベント処理のBotへの取り込み
         try:
@@ -162,19 +163,13 @@ async def on_member_update(before:discord.Member, after:discord.Member):
 
     
     #自動リネーム
-    for role in added_roles:
+    for role in removed_roles:
         if ROLE_START <= role <= ROLE_END:
             try:#鯖製作者の表示名変更権限はどうやっても得られないためtryでエラー回避
-                await after.edit(nick=role.name)
+                await after.edit(nick=None)#Noneを代入するとニックネーム未設定に戻る
                 break
             except Exception as e:
                 print(e)
-            
-
-    for role in removed_roles:
-        if ROLE_START <= role <= ROLE_END:
-            await after.edit(nick=None)
-            break
    
     #アルターエゴ死亡時　自動ロール開示
     if not added_roles.isdisjoint([ROLE_DIE]):
@@ -185,13 +180,13 @@ async def on_member_update(before:discord.Member, after:discord.Member):
 
 # キャラクターセレクト　1，2選択ボタン→セレクトメニュー　そのうち最初から1、2、1バレ無、2バレ無のセレクト出す形にする
 
-class CharaSleMenu1(discord.ui.View): # UIキットを利用するためにdiscord.ui.Viewを継承する
-    def __init__(self, timeout=180): # Viewにはtimeoutがあり、初期値は180(s)である
-        super().__init__(timeout=timeout)
+class CharaSleMenu(discord.ui.View): # UIキットを利用するためにdiscord.ui.Viewを継承する
+    def __init__(self): # Viewにはtimeoutがあり、初期値は180(s)である
+        super().__init__(timeout=None)
 
     @discord.ui.select(
         cls=discord.ui.Select,
-        placeholder="キャラクターを選択",
+        placeholder="1（無印）",
         options=[
             discord.SelectOption(label="苗木誠"),
             discord.SelectOption(label="舞園さやか"),
@@ -214,21 +209,20 @@ class CharaSleMenu1(discord.ui.View): # UIキットを利用するためにdisco
             discord.SelectOption(label="霧切響子：カップ麵"),
             discord.SelectOption(label="石丸清多夏：石田"),
             discord.SelectOption(label="江ノ島盾子：王冠"),
-        ]
+        ],
+        row=2,
+        custom_id="charasle1"
     )
     async def select(self, interaction: discord.Interaction, select: discord.ui.Select):
         await interaction.user.add_roles(discord.utils.get(interaction.guild.roles, name=select.values[0]))
         nick_to_data[select.values[0]]=CharaData(chara_ability=select.values[0])
-        await interaction.user.add_roles(discord.utils.get(interaction.guild.roles, name="生存"))#いずれ鯖からキャラロール消してここでリネームする
+        await interaction.user.add_roles(discord.utils.get(interaction.guild.roles, name="生存"))
+        await interaction.user.edit(nick=select.values[0])
         await interaction.response.send_message("よくきたな、" + select.values[0] )
-
-class CharaSleMenu2(discord.ui.View): # UIキットを利用するためにdiscord.ui.Viewを継承する
-    def __init__(self, timeout=180): # Viewにはtimeoutがあり、初期値は180(s)である
-        super().__init__(timeout=timeout)
 
     @discord.ui.select(
         cls=discord.ui.Select,
-        placeholder="キャラクターを選択",
+        placeholder="2（SUPER）",
         options=[
             discord.SelectOption(label="日向創"),
             discord.SelectOption(label="狛枝凪斗"),
@@ -253,38 +247,89 @@ class CharaSleMenu2(discord.ui.View): # UIキットを利用するためにdisco
             discord.SelectOption(label="弐大猫丸：メカ"),
             discord.SelectOption(label="七海千秋：唾吐き"),
             discord.SelectOption(label="西園寺日寄子：てへぺろ"),
-        ]
+        ],
+        row=3,
+        custom_id="charasle2"
     )
     async def select(self, interaction: discord.Interaction, select: discord.ui.Select):
         await interaction.user.add_roles(discord.utils.get(interaction.guild.roles, name=select.values[0]))
+        nick_to_data[select.values[0]]=CharaData(chara_ability=select.values[0])
         await interaction.user.add_roles(discord.utils.get(interaction.guild.roles, name="生存"))
+        await interaction.user.edit(nick=select.values[0])
         await interaction.response.send_message("よくきたな、" + select.values[0] )
 
-class CharaSleButton1(discord.ui.View): # UIキットを利用するためにdiscord.ui.Viewを継承する
-    def __init__(self, timeout=180): # Viewにはtimeoutがあり、初期値は180(s)である
-        super().__init__(timeout=timeout)
+    @discord.ui.select(
+        cls=discord.ui.Select,
+        placeholder="ネタバレ配慮　1（無印）",
+        options=[
+            discord.SelectOption(label="苗木誠"),
+            discord.SelectOption(label="舞園さやか"),
+            discord.SelectOption(label="桑田怜恩"),
+            discord.SelectOption(label="霧切響子"),
+            discord.SelectOption(label="十神白夜"),
+            discord.SelectOption(label="山田一二三"),
+            discord.SelectOption(label="大和田紋土"),
+            discord.SelectOption(label="腐川冬子"),
+            discord.SelectOption(label="セレスティアルーデンベルク"),
+            discord.SelectOption(label="朝日奈葵"),
+            discord.SelectOption(label="石丸清多夏"),
+            discord.SelectOption(label="大神さくら"),
+            discord.SelectOption(label="葉隠康比呂"),
+            discord.SelectOption(label="江ノ島盾子"),
+            discord.SelectOption(label="不二咲千尋"),
+        ],
+        row=0,
+        custom_id="charaslelessbare1"
+    )
+    async def select(self, interaction: discord.Interaction, select: discord.ui.Select):
+        await interaction.user.add_roles(discord.utils.get(interaction.guild.roles, name=select.values[0]))
+        nick_to_data[select.values[0]]=CharaData(chara_ability=select.values[0])
+        await interaction.user.add_roles(discord.utils.get(interaction.guild.roles, name="生存"))
+        await interaction.user.edit(nick=select.values[0])
+        await interaction.response.send_message("よくきたな、" + select.values[0] )
 
-    @discord.ui.button(label="無印(1)", style=discord.ButtonStyle.primary) # OKボタン、押すとOKと返信する
-    async def ok(self, interaction: discord.Interaction, button: discord.ui.Button):
-        view = CharaSleMenu1(timeout=None)
-        await interaction.response.send_message(view=view)
-
-    @discord.ui.button(label="スーパー(2)", style=discord.ButtonStyle.primary) # NGボタン、押すとNGと返信する
-    async def ng(self, interaction: discord.Interaction, button: discord.ui.Button):
-        view = CharaSleMenu2(timeout=None)
-        await interaction.response.send_message(view=view)
+    @discord.ui.select(
+        cls=discord.ui.Select,
+        placeholder="ネタバレ配慮　2（SUPER）",
+        options=[
+            discord.SelectOption(label="日向創"),
+            discord.SelectOption(label="狛枝凪斗"),
+            discord.SelectOption(label="田中眼蛇夢"),
+            discord.SelectOption(label="左右田和一"),
+            discord.SelectOption(label="十神白夜：ジャバウォック島のすがた"),
+            discord.SelectOption(label="花村輝々"),
+            discord.SelectOption(label="弐大猫丸"),
+            discord.SelectOption(label="九頭龍冬彦"),
+            discord.SelectOption(label="終里赤音"),
+            discord.SelectOption(label="七海千秋"),
+            discord.SelectOption(label="ソニアネヴァーマインド"),
+            discord.SelectOption(label="西園寺日寄子"),
+            discord.SelectOption(label="小泉真昼"),
+            discord.SelectOption(label="罪木蜜柑"),
+            discord.SelectOption(label="澪田唯吹"),
+            discord.SelectOption(label="辺古山ペコ"),
+        ],
+        row=1,
+        custom_id="chareslelessbare2"
+    )
+    async def select(self, interaction: discord.Interaction, select: discord.ui.Select):
+        await interaction.user.add_roles(discord.utils.get(interaction.guild.roles, name=select.values[0]))
+        nick_to_data[select.values[0]]=CharaData(chara_ability=select.values[0])
+        await interaction.user.add_roles(discord.utils.get(interaction.guild.roles, name="生存"))
+        await interaction.user.edit(nick=select.values[0])
+        await interaction.response.send_message("よくきたな、" + select.values[0] )
 
 @bot.tree.command(name="monotaro",
-                  description="キャラクターを選択し、管理用のサーバーロールを取得します",
+                  description="キャラクターを選択し、Botに登録するメニューを出します",
                   guild=Test_GUILD
                   )
 async def chara_select(itx:discord.Interaction):
-    testembed = discord.Embed(
+    embedtxt = discord.Embed(
         title="キャラクター選択",
-        description="おはっくまー！\nオマエはどちらから来た誰さん？\n\n（キャラカードを参照し、登場作品を選択）"
+        description="おはっくまー！\nオマエはどちらから来た誰さん？\n\n（キャラカードを参照し、\n登場作品に対応したメニューからキャラクターを選択）"
         )
-    view = CharaSleButton1(timeout=None)
-    await itx.response.send_message(embed=testembed,view=view)
+    view = CharaSleMenu()
+    await itx.response.send_message(embed=embedtxt,view=view)
 
 # 役職ロールセレクトメニュー
 class RoleSleMenu(discord.ui.View):
