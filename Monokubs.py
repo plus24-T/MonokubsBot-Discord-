@@ -8,7 +8,8 @@ from discord.ext import commands
 
 load_dotenv()#環境変数の読み込み
 
-Test_GUILD = discord.Object(id=os.getenv("GUILD_ID"))#テスト鯖のIDからテスト鯖オブジェクトを取得 
+Test_GUILD = discord.Object(id=os.getenv("GUILD_ID"))#テスト鯖のIDからテスト鯖オブジェクトを取得
+
 #参加キャラのデータを格納するクラス
 @dataclasses.dataclass#役職のデータを格納するクラス
 class CharaRole:
@@ -29,6 +30,13 @@ class CharaData:
     escorted:bool=False#護衛されているか（True：されている、False：されていない）
     position=int#席の位置、生存人数の剰余で隣り合っているか判定する
 
+#ゲーム進行にまつわる値と変数を格納するクラス
+@dataclasses.dataclass
+class Counts_on_Games:
+    player:int = 0 #（ゲームに参加しない場合のGMを除いた）プレイヤー数
+    death:int = 0 #　死亡者数（超絶望の判定条件で参照、何日目昼　生存：10　死亡：1みたいなの出したい
+    kill:int = 0 #　殺害数（ゲーム終了トリガーとして参照
+    day:int = 0 #　何日目か（能力使用の条件として参照、司会進行メッセージで参照
 #キャラロール名からデータ格納変数名への変換辞書　要る？変数名直打ちすることないので要らないより
 #                                               個人へのデータの紐づけ方法要検討　メンバーidの方がよさげ？
 nick_to_data={
@@ -179,6 +187,19 @@ async def on_member_update(before:discord.Member, after:discord.Member):
         if nick_to_data[after.nick].role.id == 1:
             await discord.utils.get(guild.channels,name="食堂").send(f"『{after.nick}』はアルターエゴでした")
 
+#プレイヤー人数登録
+
+@bot.tree.command(name="input_number_of_players",
+                  description="プレイ人数(GM除く)をbotに登録します",
+                  guild=Test_GUILD
+                  )
+async def chara_select(itx:discord.Interaction,num:Literal[4,5,6,7,8,9,10,11,12,13,14,15,16]):
+
+    CoG = Counts_on_Games(player=num)
+    await itx.response.send_message(f"今回のGMを除いたゲーム参加者は{num}人で登録しました\n"
+                                    "誤入力の場合は再度登録しなおしてください\n"
+                                    "※生存者数ではないのでゲーム進行により死亡キャラクターが\n"
+                                    "発生しても更新する必要はありません")
 
 # キャラクターセレクト
 class CharaSleMenu1(discord.ui.View): # UIキットを利用するためにdiscord.ui.Viewを継承する
@@ -397,7 +418,7 @@ class RoleSleMenu(discord.ui.View):
         await itx.user.add_roles(discord.utils.get(itx.guild.roles, name=select.values[0]))
         nick_to_data[itx.user.nick].role.name=select.values[0]
         nick_to_data[itx.user.nick].role.id=role_name_to_para[select.values[0]]
-        print(nick_to_data[itx.user.nick])
+        print(nick_to_data[itx.user.nick])#プレイヤー（キャラ紐づけデータが機能しているか確認用、そのうち消す）
         if 6 <= role_name_to_para[select.values[0]] <= 7:
             await discord.utils.get(itx.guild.channels,name="裏切者").send(f"『{itx.user.nick}』は『{select.values[0]}』です")
         await itx.response.send_message("オマエニ、" + select.values[0] + " ノ、ロールヲ付与シマシタ", ephemeral=True)
