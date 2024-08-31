@@ -5,6 +5,7 @@ from dotenv import load_dotenv
 from typing import List, Literal
 import discord
 from discord.ext import commands
+import gv 
 
 load_dotenv()#環境変数の読み込み
 
@@ -41,19 +42,19 @@ class Counts_on_Games:
 
 CoG=Counts_on_Games()
 
-#各役職がどのキャラクターかを格納するデータクラス
+#各役職がどのキャラクターかを格納する変数
 @dataclasses.dataclass
 class RoleBreakdown:
-    siro:list[discord.Member]=[]
-    alterego:discord.Member
-    miraikikan:discord.Member
-    tyozetsubo:discord.Member
-    zetsubobyo:discord.Member
-    monomi:discord.Member
-    kuro:discord.Member
-    uragiri:list[discord.Member]=[]
-    zako:discord.Member
-    zantou:discord.Member
+    siro:list[discord.Member]=dataclasses.field(default_factory=list)
+    alterego:list[discord.Member]=dataclasses.field(default_factory=list)
+    miraikikan:list[discord.Member]=dataclasses.field(default_factory=list)
+    tyozetsubo:list[discord.Member]=dataclasses.field(default_factory=list)
+    zetsubobyo:list[discord.Member]=dataclasses.field(default_factory=list)
+    monomi:list[discord.Member]=dataclasses.field(default_factory=list)
+    kuro:list[discord.Member]=dataclasses.field(default_factory=list)
+    uragiri:list[discord.Member]=dataclasses.field(default_factory=list)
+    zako:list[discord.Member]=dataclasses.field(default_factory=list)
+    zantou:list[discord.Member]=dataclasses.field(default_factory=list)
 
 RoleBr=RoleBreakdown()
 
@@ -257,7 +258,9 @@ class CharaSleMenu1(discord.ui.View): # UIキットを利用するためにdisco
     )
     async def select(self, interaction: discord.Interaction, select: discord.ui.Select):
         await interaction.user.add_roles(discord.utils.get(interaction.guild.roles, name=select.values[0]))
-        nick_to_data[select.values[0]]=CharaData(chara_ability=select.values[0])
+        
+        exec(f"gv.{nick_to_data[select.values[0]]}=CharaData()")
+        exec(f"gv.{nick_to_data[select.values[0]]}.chara_ability=select.values[0]")
         await interaction.user.add_roles(discord.utils.get(interaction.guild.roles, name="生存"))
         try:
             await interaction.user.edit(nick=select.values[0])
@@ -439,8 +442,8 @@ class RoleSleMenu(discord.ui.View):
     async def select(self, itx: discord.Interaction, select: discord.ui.Select):
         await itx.user.add_roles(discord.utils.get(itx.guild.roles, name=select.values[0]))
         #データの格納
-        nick_to_data[itx.user.nick].role.name=select.values[0]
-        nick_to_data[itx.user.nick].role.id=role_name_to_para[select.values[0]]
+        exec(f"gv.{nick_to_data[itx.user.nick]}.role.name=select.values[0]")
+        exec(f"gv.{nick_to_data[itx.user.nick]}.role.id=role_name_to_para[select.values[0]]")
         #登録済み人数のカウント
         CoG.role_registered += 1
         #役職ごとのメンバーのリストに格納
@@ -449,19 +452,19 @@ class RoleSleMenu(discord.ui.View):
                 "絶望病患者":"zetsubobyo","ザコケモノ":"zako",
                 "未来機関":"miraikikan","絶望の残党":"zantou"
                 }
-        exec(f"RoleBr.{henkan[select.values[0]]}.append=itx.user")
+        exec(f"RoleBr.{henkan[select.values[0]]}.append(itx.user)")
        #プレイヤー（キャラ紐づけデータが機能しているか確認用、そのうち消す）
-        print(nick_to_data[itx.user.nick])
+        exec(f"print(gv.{nick_to_data[itx.user.nick]})")
         #登録内容の確認メッセージ投稿
         await itx.response.send_message("オマエニ、" + select.values[0] + " ノ、ロールヲ付与シマシタ", ephemeral=True)
         #全員の登録が終わったらクロと裏切者を各裏切者に通知
         if CoG.role_registered == CoG.player:
-            uragiriyatura:list[str]=[]
+            uragiriyatura:str=""
             for uragirimono in RoleBr.uragiri:
-                uragiriyatura.append(uragirimono.nick)
+                uragiriyatura += uragirimono.nick+"\n"
             for uragirimono in RoleBr.uragiri:
                 await discord.utils.get(itx.guild.channels,name=uragirimono.nick).send(
-                    f"クロは『{RoleBr.kuro}』です\n\n{uragiriyatura}は裏切者です"
+                    f"クロは『{RoleBr.kuro[0].nick}』です\n\n{uragiriyatura}は裏切者です"
                 )
 
 @bot.tree.command(name="monodam",description="自身の役職を選択し、管理用のサーバーロールを取得します",guild=Test_GUILD)
