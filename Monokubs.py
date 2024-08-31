@@ -37,6 +37,27 @@ class Counts_on_Games:
     death:int = 0 #　死亡者数（超絶望の判定条件で参照、何日目昼　生存：10　死亡：1みたいなの出したい
     kill:int = 0 #　殺害数（ゲーム終了トリガーとして参照
     day:int = 0 #　何日目か（能力使用の条件として参照、司会進行メッセージで参照
+    role_registered:int = 0 #役職登録済みプレイヤー数（全員登録終わってからにクロ裏切者通知する用
+
+CoG=Counts_on_Games()
+
+#各役職がどのキャラクターかを格納するデータクラス
+@dataclasses.dataclass
+class RoleBreakdown:
+    siro:list[discord.Member]=[]
+    alterego:discord.Member
+    miraikikan:discord.Member
+    tyozetsubo:discord.Member
+    zetsubobyo:discord.Member
+    monomi:discord.Member
+    kuro:discord.Member
+    uragiri:list[discord.Member]=[]
+    zako:discord.Member
+    zantou:discord.Member
+
+RoleBr=RoleBreakdown()
+
+
 #キャラロール名からデータ格納変数名への変換辞書　要る？変数名直打ちすることないので要らないより
 #                                               個人へのデータの紐づけ方法要検討　メンバーidの方がよさげ？
 nick_to_data={
@@ -195,7 +216,7 @@ async def on_member_update(before:discord.Member, after:discord.Member):
                   )
 async def chara_select(itx:discord.Interaction,num:Literal[4,5,6,7,8,9,10,11,12,13,14,15,16]):
 
-    CoG = Counts_on_Games(player=num)
+    CoG.player=num
     await itx.response.send_message(f"今回のGMを除いたゲーム参加者は{num}人で登録しました\n"
                                     "誤入力の場合は再度登録しなおしてください\n"
                                     "※生存者数ではないのでゲーム進行により死亡キャラクターが\n"
@@ -393,6 +414,7 @@ async def chara_select(itx:discord.Interaction):
     await itx.followup.send(view=CharaSleMenu2())
 
 # 役職ロールセレクトメニュー
+
 class RoleSleMenu(discord.ui.View):
     def __init__(self):
         super().__init__(timeout=None)
@@ -416,12 +438,31 @@ class RoleSleMenu(discord.ui.View):
     )
     async def select(self, itx: discord.Interaction, select: discord.ui.Select):
         await itx.user.add_roles(discord.utils.get(itx.guild.roles, name=select.values[0]))
+        #データの格納
         nick_to_data[itx.user.nick].role.name=select.values[0]
         nick_to_data[itx.user.nick].role.id=role_name_to_para[select.values[0]]
-        print(nick_to_data[itx.user.nick])#プレイヤー（キャラ紐づけデータが機能しているか確認用、そのうち消す）
-        if 6 <= role_name_to_para[select.values[0]] <= 7:
-            await discord.utils.get(itx.guild.channels,name="裏切者").send(f"『{itx.user.nick}』は『{select.values[0]}』です")
+        #登録済み人数のカウント
+        CoG.role_registered += 1
+        #役職ごとのメンバーのリストに格納
+        henkan={"シロ":"siro","クロ":"kuro","アルターエゴ":"alterego",
+                "裏切者":"uragiri","モノミ":"monomi","超高校級の絶望":"tyozetsubo",
+                "絶望病患者":"zetsubobyo","ザコケモノ":"zako",
+                "未来機関":"miraikikan","絶望の残党":"zantou"
+                }
+        exec(f"RoleBr.{henkan[select.values[0]]}.append=itx.user")
+       #プレイヤー（キャラ紐づけデータが機能しているか確認用、そのうち消す）
+        print(nick_to_data[itx.user.nick])
+        #登録内容の確認メッセージ投稿
         await itx.response.send_message("オマエニ、" + select.values[0] + " ノ、ロールヲ付与シマシタ", ephemeral=True)
+        #全員の登録が終わったらクロと裏切者を各裏切者に通知
+        if CoG.role_registered == CoG.player:
+            uragiriyatura:list[str]=[]
+            for uragirimono in RoleBr.uragiri:
+                uragiriyatura.append(uragirimono.nick)
+            for uragirimono in RoleBr.uragiri:
+                await discord.utils.get(itx.guild.channels,name=uragirimono.nick).send(
+                    f"クロは『{RoleBr.kuro}』です\n\n{uragiriyatura}は裏切者です"
+                )
 
 @bot.tree.command(name="monodam",description="自身の役職を選択し、管理用のサーバーロールを取得します",guild=Test_GUILD)
 @commands.is_owner()
