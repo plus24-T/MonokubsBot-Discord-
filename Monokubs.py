@@ -154,8 +154,8 @@ class MonokubsBot(commands.Bot):
     async def setup_hook(self) -> None:
 
         self.add_view(RoleSleMenu())# view(ボタンやセレクトメニュー)のBotへの取り込み
-        self.add_view(CharaSleMenu1())
-        self.add_view(CharaSleMenu2())
+        self.add_view(CharaSleMenu1())#Viewにカスタムidを設定したうえでこれをしておくと
+        self.add_view(CharaSleMenu2())#Botを立ち上げなおしてもボタン類が機能するようになる
         self.add_view(CharaSleMenuC1())
         self.add_view(CharaSleMenuC2())
 
