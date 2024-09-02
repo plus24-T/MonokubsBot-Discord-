@@ -1,12 +1,14 @@
 import os
-from typing import List 
-import discord.context_managers
-from discord.utils import MISSING
 from dotenv import load_dotenv
 
 import discord
 from discord import app_commands
-from discord.ext import commands
+from discord.ext import commands 
+import discord.context_managers
+
+from typing import List
+
+import gv
 
 load_dotenv()
 
@@ -14,7 +16,8 @@ class Rehearsal_Select(discord.ui.Select):
     def __init__(self,options:list[discord.SelectOption]):
         super().__init__(
             placeholder="対象を選択",
-            options=options
+            options=options,
+            disabled=False
             )
     async def callback(self, itx: discord.Interaction):
         await itx.response.send_message(f"『{self.values[0]}』の部屋を荒らしました")
@@ -22,6 +25,7 @@ class Rehearsal_Select(discord.ui.Select):
             "あなたの部屋が荒らされました、手持ちのアイテムを1枚選択して裏向きのまま捨てて下さい"
             )
         await discord.utils.get(itx.guild.channels,name="食堂").send(f"{self.values[0]}の部屋が荒らされました")
+        self.disabled=True
 
 class Rehearsal_View(discord.ui.View):
     def __init__(self,options:list[discord.SelectOption]):
@@ -43,7 +47,7 @@ class Rehearsal(commands.Cog):#コマンド名、頭大文字でクラス作成
         for member in living_members:
             select_op_living_members.append(discord.SelectOption(label=member.nick))
         await itx.response.send_message("クロが下見の対象を選択しています")
-        await discord.utils.get(itx.guild.channels,name="クロ").send(#最終的には役職チャンネルなくして個人のプライベートチャンネルに投稿するように変更予定
+        await discord.utils.get(itx.guild.channels,name=gv.Cast.kuro[0].nick).send(#最終的には役職チャンネルなくして個人のプライベートチャンネルに投稿するように変更予定
             "下見の対象を選択してください",
             view=Rehearsal_View(options=select_op_living_members)
             )

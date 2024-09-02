@@ -1,3 +1,5 @@
+import discord
+
 import dataclasses
 #参加キャラのデータを格納するクラス
 @dataclasses.dataclass#役職のデータを格納するクラス
@@ -63,3 +65,19 @@ MCC_07 = CharaData()
 MCC_08 = CharaData()
 MCC_09 = CharaData()
 MCC_10 = CharaData()
+
+#各役職がどのキャラクターかを格納する変数　キャスト（配役）リスト
+@dataclasses.dataclass
+class CastLists:
+    siro:list[discord.Member]=dataclasses.field(default_factory=list)
+    alterego:list[discord.Member]=dataclasses.field(default_factory=list)
+    miraikikan:list[discord.Member]=dataclasses.field(default_factory=list)
+    tyozetsubo:list[discord.Member]=dataclasses.field(default_factory=list)
+    zetsubobyo:list[discord.Member]=dataclasses.field(default_factory=list)
+    monomi:list[discord.Member]=dataclasses.field(default_factory=list)
+    kuro:list[discord.Member]=dataclasses.field(default_factory=list)
+    uragiri:list[discord.Member]=dataclasses.field(default_factory=list)
+    zako:list[discord.Member]=dataclasses.field(default_factory=list)
+    zantou:list[discord.Member]=dataclasses.field(default_factory=list)
+
+Cast=CastLists()

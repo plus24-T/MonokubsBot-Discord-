@@ -22,23 +22,6 @@ class Counts_on_Games:
 
 CoG=Counts_on_Games()
 
-#各役職がどのキャラクターかを格納する変数
-@dataclasses.dataclass
-class RoleBreakdown:
-    siro:list[discord.Member]=dataclasses.field(default_factory=list)
-    alterego:list[discord.Member]=dataclasses.field(default_factory=list)
-    miraikikan:list[discord.Member]=dataclasses.field(default_factory=list)
-    tyozetsubo:list[discord.Member]=dataclasses.field(default_factory=list)
-    zetsubobyo:list[discord.Member]=dataclasses.field(default_factory=list)
-    monomi:list[discord.Member]=dataclasses.field(default_factory=list)
-    kuro:list[discord.Member]=dataclasses.field(default_factory=list)
-    uragiri:list[discord.Member]=dataclasses.field(default_factory=list)
-    zako:list[discord.Member]=dataclasses.field(default_factory=list)
-    zantou:list[discord.Member]=dataclasses.field(default_factory=list)
-
-RoleBr=RoleBreakdown()
-
-
 #キャラ名からデータクラスへの変換辞書
 nick_to_data={
     "苗木誠":gv.CC_02,
@@ -424,24 +407,25 @@ class RoleSleMenu(discord.ui.View):
         #登録済み人数のカウント
         CoG.role_registered += 1
         #役職ごとのメンバーのリストに格納
-        henkan={"シロ":"siro","クロ":"kuro","アルターエゴ":"alterego",
-                "裏切者":"uragiri","モノミ":"monomi","超高校級の絶望":"tyozetsubo",
-                "絶望病患者":"zetsubobyo","ザコケモノ":"zako",
-                "未来機関":"miraikikan","絶望の残党":"zantou"
+        memlis={"シロ":gv.Cast.siro,"クロ":gv.Cast.kuro,"アルターエゴ":gv.Cast.alterego,
+                "裏切者":gv.Cast.uragiri,"モノミ":gv.Cast.monomi,"超高校級の絶望":gv.Cast.tyozetsubo,
+                "絶望病患者":gv.Cast.zetsubobyo,"ザコケモノ":gv.Cast.zako,
+                "未来機関":gv.Cast.miraikikan,"絶望の残党":gv.Cast.zantou
                 }
-        exec(f"RoleBr.{henkan[select.values[0]]}.append(itx.user)")
+        memlis[select.values[0]].append(itx.user)
        #プレイヤー（キャラ紐づけデータが機能しているか確認用、そのうち消す）
         print(nick_to_data[itx.user.nick])
+        print(gv.Cast.kuro[0].nick)
         #登録内容の確認メッセージ投稿
         await itx.response.send_message("オマエニ、" + select.values[0] + " ノ、ロールヲ付与シマシタ", ephemeral=True)
         #全員の登録が終わったらクロと裏切者を各裏切者に通知
         if CoG.role_registered == CoG.player:
             uragiriyatura:str=""
-            for uragirimono in RoleBr.uragiri:
+            for uragirimono in gv.Cast.uragiri:
                 uragiriyatura += uragirimono.nick+"\n"
-            for uragirimono in RoleBr.uragiri:
+            for uragirimono in gv.Cast.uragiri:
                 await discord.utils.get(itx.guild.channels,name=uragirimono.nick).send(
-                    f"クロは『{RoleBr.kuro[0].nick}』です\n\n{uragiriyatura}は裏切者です"
+                    f"クロは『{gv.Cast.kuro[0].nick}』です\n\n{uragiriyatura}は裏切者です"
                 )
 
 @bot.tree.command(name="monodam",description="役職登録メニューを出します",guild=Test_GUILD)
