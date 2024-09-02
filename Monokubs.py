@@ -22,54 +22,6 @@ class Counts_on_Games:
 
 CoG=Counts_on_Games()
 
-#キャラ名からデータクラスへの変換辞書
-nick_to_data={
-    "苗木誠":gv.CC_02,
-    "舞園さやか":gv.CC_03,
-    "桑田怜恩":gv.CC_04,
-    "霧切響子":gv.CC_05,
-    "十神白夜":gv.CC_06,
-    "山田一二三":gv.CC_07,
-    "大和田紋土":gv.CC_08,
-    "腐川冬子":gv.CC_09,
-    "セレスティアルーデンベルク":gv.CC_10,
-    "朝日奈葵":gv.CC_11,
-    "石丸清多夏":gv.CC_12,
-    "大神さくら":gv.CC_13,
-    "葉隠康比呂":gv.CC_14,
-    "江ノ島盾子":gv.CC_15,
-    "不二咲千尋":gv.CC_16,
-    "ジェノサイダー翔":gv.CC_17,
-    "戦刃むくろ":gv.CC_18,
-    "江ノ島盾子：絶望":gv.CC_19,
-    "霧切響子：カップ麵":gv.MCC_01,
-    "石丸清多夏：石田":gv.MCC_08,
-    "江ノ島盾子：王冠":gv.MCC_09,
-    "日向創":gv.CC_20,
-    "狛枝凪斗":gv.CC_21,
-    "田中眼蛇夢":gv.CC_22,
-    "左右田和一":gv.CC_23,
-    "十神白夜：ジャバウォック島のすがた":gv.CC_24,
-    "花村輝々":gv.CC_25,
-    "弐大猫丸":gv.CC_26,
-    "九頭龍冬彦":gv.CC_27,
-    "終里赤音":gv.CC_28,
-    "七海千秋":gv.CC_29,
-    "ソニアネヴァーマインド":gv.CC_30,
-    "西園寺日寄子":gv.CC_31,
-    "小泉真昼":gv.CC_32,
-    "罪木蜜柑":gv.CC_33,
-    "澪田唯吹":gv.CC_34,
-    "辺古山ペコ":gv.CC_35,
-    "狛枝凪斗：絶望":gv.MCC_02,
-    "左右田和一：楳図かずお画風":gv.MCC_03,
-    "十神白夜：腕組み":gv.MCC_05,
-    "花村輝々：鼻血":gv.MCC_07,
-    "弐大猫丸：メカ":gv.MCC_10,
-    "七海千秋：唾吐き":gv.MCC_06,
-    "西園寺日寄子：てへぺろ":gv.MCC_04
-}
-
 #キャラの役職パラメータと役職名の変換辞書
 role_para_to_name:dict = {
     0:"シロ",
@@ -168,7 +120,7 @@ async def on_member_update(before:discord.Member, after:discord.Member):
    
     #アルターエゴ死亡時　自動ロール開示
     if not added_roles.isdisjoint([ROLE_DIE]):
-        if nick_to_data[after.nick].role.id == 1:
+        if gv.nick_to_data[after.nick].role.id == 1:
             await discord.utils.get(guild.channels,name="食堂").send(f"『{after.nick}』はアルターエゴでした")
 
 #プレイヤー人数登録
@@ -221,7 +173,7 @@ class CharaSleMenu1(discord.ui.View): # UIキットを利用するためにdisco
     async def select(self, interaction: discord.Interaction, select: discord.ui.Select):
         await interaction.user.add_roles(discord.utils.get(interaction.guild.roles, name=select.values[0]))
     
-        nick_to_data[select.values[0]].chara_ability=select.values[0]
+        gv.nick_to_data[select.values[0]].chara_ability=select.values[0]
         await interaction.user.add_roles(discord.utils.get(interaction.guild.roles, name="生存"))
         try:
             await interaction.user.edit(nick=select.values[0])
@@ -269,7 +221,7 @@ class CharaSleMenu2(discord.ui.View): # UIキットを利用するためにdisco
     )
     async def select(self, interaction: discord.Interaction, select: discord.ui.Select):
         await interaction.user.add_roles(discord.utils.get(interaction.guild.roles, name=select.values[0]))
-        nick_to_data[select.values[0]].chara_ability=select.values[0]
+        gv.nick_to_data[select.values[0]].chara_ability=select.values[0]
         await interaction.user.add_roles(discord.utils.get(interaction.guild.roles, name="生存"))
         try:
             await interaction.user.edit(nick=select.values[0])
@@ -309,7 +261,7 @@ class CharaSleMenuC1(discord.ui.View): # UIキットを利用するためにdisc
     )
     async def select(self, interaction: discord.Interaction, select: discord.ui.Select):
         await interaction.user.add_roles(discord.utils.get(interaction.guild.roles, name=select.values[0]))
-        nick_to_data[select.values[0]].chara_ability=select.values[0]
+        gv.nick_to_data[select.values[0]].chara_ability=select.values[0]
         await interaction.user.add_roles(discord.utils.get(interaction.guild.roles, name="生存"))
         try:
             await interaction.user.edit(nick=select.values[0])
@@ -349,7 +301,7 @@ class CharaSleMenuC2(discord.ui.View): # UIキットを利用するためにdisc
     )
     async def select(self, interaction: discord.Interaction, select: discord.ui.Select):
         await interaction.user.add_roles(discord.utils.get(interaction.guild.roles, name=select.values[0]))
-        nick_to_data[select.values[0]].chara_ability=select.values[0]
+        gv.nick_to_data[select.values[0]].chara_ability=select.values[0]
         await interaction.user.add_roles(discord.utils.get(interaction.guild.roles, name="生存"))
         try:
             await interaction.user.edit(nick=select.values[0])
@@ -402,8 +354,8 @@ class RoleSleMenu(discord.ui.View):
     async def select(self, itx: discord.Interaction, select: discord.ui.Select):
         await itx.user.add_roles(discord.utils.get(itx.guild.roles, name=select.values[0]))#しばらくは確認用に置いておく
         #データの格納
-        nick_to_data[itx.user.nick].role.name=select.values[0]
-        nick_to_data[itx.user.nick].role.id=role_name_to_para[select.values[0]]
+        gv.nick_to_data[itx.user.nick].role.name=select.values[0]
+        gv.nick_to_data[itx.user.nick].role.id=role_name_to_para[select.values[0]]
         #登録済み人数のカウント
         CoG.role_registered += 1
         #役職ごとのメンバーのリストに格納
@@ -414,8 +366,7 @@ class RoleSleMenu(discord.ui.View):
                 }
         memlis[select.values[0]].append(itx.user)
        #プレイヤー（キャラ紐づけデータが機能しているか確認用、そのうち消す）
-        print(nick_to_data[itx.user.nick])
-        print(gv.Cast.kuro[0].nick)
+        print(gv.nick_to_data[itx.user.nick])
         #登録内容の確認メッセージ投稿
         await itx.response.send_message("オマエニ、" + select.values[0] + " ノ、ロールヲ付与シマシタ", ephemeral=True)
         #全員の登録が終わったらクロと裏切者を各裏切者に通知
@@ -526,7 +477,7 @@ class AlEgo_Select(discord.ui.Select):
            despair_threshold=3
         else:
            despair_threshold=2
-        role_id = nick_to_data[self.values[0]].role.id
+        role_id = gv.nick_to_data[self.values[0]].role.id
         if role_id <=despair_threshold:
             await itx.response.send_message(f"『{self.values[0]}』は希望〈キボウ〉サイドです")
         else:
