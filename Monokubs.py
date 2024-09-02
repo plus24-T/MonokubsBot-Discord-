@@ -350,7 +350,6 @@ class CharaSleMenuC2(discord.ui.View): # UIキットを利用するためにdisc
             discord.SelectOption(label="狛枝凪斗"),
             discord.SelectOption(label="田中眼蛇夢"),
             discord.SelectOption(label="左右田和一"),
-            discord.SelectOption(label="十神白夜：ジャバウォック島のすがた"),
             discord.SelectOption(label="花村輝々"),
             discord.SelectOption(label="弐大猫丸"),
             discord.SelectOption(label="九頭龍冬彦"),

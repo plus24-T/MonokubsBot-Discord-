@@ -8,7 +8,7 @@ from discord.ext import commands
 
 load_dotenv()
 
-class Command名(commands.Cog):#コマンド名、頭大文字でクラス作成
+class Command名(commands.Cog):#コマンド名、任意だが分かりやすさのために頭大文字でクラス作成
     def __init__(self, bot:commands.Bot):
         self.bot = bot
 
