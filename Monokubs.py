@@ -417,7 +417,7 @@ class RoleSleMenu(discord.ui.View):
         custom_id="role_sle_menu"
     )
     async def select(self, itx: discord.Interaction, select: discord.ui.Select):
-        await itx.user.add_roles(discord.utils.get(itx.guild.roles, name=select.values[0]))
+        await itx.user.add_roles(discord.utils.get(itx.guild.roles, name=select.values[0]))#しばらくは確認用に置いておく
         #データの格納
         nick_to_data[itx.user.nick].role.name=select.values[0]
         nick_to_data[itx.user.nick].role.id=role_name_to_para[select.values[0]]
@@ -444,10 +444,10 @@ class RoleSleMenu(discord.ui.View):
                     f"クロは『{RoleBr.kuro[0].nick}』です\n\n{uragiriyatura}は裏切者です"
                 )
 
-@bot.tree.command(name="monodam",description="自身の役職を選択し、管理用のサーバーロールを取得します",guild=Test_GUILD)
+@bot.tree.command(name="monodam",description="役職登録メニューを出します",guild=Test_GUILD)
 @commands.is_owner()
 async def monodam(itx: discord.Interaction):
-    await itx.response.send_message("ロール選択ヲ、オ願イスルヨ",view=RoleSleMenu())
+    await itx.response.send_message("ロール、ノ登録ヲ、オ願イスルヨ",view=RoleSleMenu())
 
 # helloコマンド
 @bot.tree.command(name='hello', description='Say hello to the world!',guild=Test_GUILD) 
