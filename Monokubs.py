@@ -44,6 +44,7 @@ initial_extensions = [
     "Yasuke",
     "Rehearsal",
     "Night",
+    "Tsumiki",
 ]
 #botのインスタンス化と起動時の処理
 class MonokubsBot(commands.Bot):
@@ -364,7 +365,7 @@ class RoleSleMenu(discord.ui.View):
         #登録内容の確認メッセージ投稿
         await itx.response.send_message("オマエニ、" + select.values[0] + " ノ、ロールヲ付与シマシタ", ephemeral=True)
         #全員の登録が終わったらクロと裏切者を各裏切者に通知
-        if CoG.role_registered == CoG.player:
+        if gv.role_registered == gv.player:
             uragiriyatura:str=""
             for uragirimono in gv.Cast.uragiri:
                 uragiriyatura += uragirimono.nick+"\n"
@@ -450,6 +451,7 @@ async def ext_reload(
         "Yasuke",
         "Rehearsal",
         "Night",
+        "Tsumiki",
     ]
 ):
     await bot.reload_extension(f"cogs.{ext_name}")
