@@ -46,6 +46,7 @@ initial_extensions = [
     "Night",
     "Tsumiki"
     "KillrianCamera",
+    "Album",
 ]
 #botのインスタンス化と起動時の処理
 class MonokubsBot(commands.Bot):
@@ -454,6 +455,7 @@ async def ext_reload(
         "Night",
         "Tsumiki",
         "KillrianCamera",
+        "Album",
     ]
 ):
     await bot.reload_extension(f"cogs.{ext_name}")
