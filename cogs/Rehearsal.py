@@ -21,9 +21,11 @@ class Rehearsal_Select(discord.ui.Select):
             )
     async def callback(self, itx: discord.Interaction):
         await itx.response.send_message(f"『{self.values[0]}』の部屋を荒らしました")
+        gv.day+=1
         await discord.utils.get(itx.guild.channels,name=self.values[0]).send(
             "あなたの部屋が荒らされました、手持ちのアイテムを1枚選択して裏向きのまま捨てて下さい"
             )
+        await discord.utils.get(itx.guild.channels,name="食堂").send(f"オハヨウゴザイマス\n{gv.day}日目の朝時間になりました")
         await discord.utils.get(itx.guild.channels,name="食堂").send(f"{self.values[0]}の部屋が荒らされました")
         self.disabled=True
 
