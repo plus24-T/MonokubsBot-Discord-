@@ -11,17 +11,6 @@ load_dotenv()#環境変数の読み込み
 
 Test_GUILD = discord.Object(id=os.getenv("GUILD_ID"))#テスト鯖のIDからテスト鯖オブジェクトを取得
 
-#ゲーム進行にまつわる値と変数を格納するクラス
-@dataclasses.dataclass
-class Counts_on_Games:
-    player:int = 0 #（ゲームに参加しない場合のGMを除いた）プレイヤー数
-    death:int = 0 #　死亡者数（超絶望の判定条件で参照、何日目昼　生存：10　死亡：1みたいなの出したい
-    kill:int = 0 #　殺害数（ゲーム終了トリガーとして参照
-    day:int = 0 #　何日目か（能力使用の条件として参照、司会進行メッセージで参照
-    role_registered:int = 0 #役職登録済みプレイヤー数（全員登録終わってからにクロ裏切者通知する用
-
-CoG=Counts_on_Games()
-
 #キャラの役職パラメータと役職名の変換辞書
 role_para_to_name:dict = {
     0:"シロ",
@@ -136,7 +125,7 @@ async def on_member_update(before:discord.Member, after:discord.Member):
                   )
 async def chara_select(itx:discord.Interaction,num:Literal[4,5,6,7,8,9,10,11,12,13,14,15,16]):
 
-    CoG.player=num
+    gv.player=num
     await itx.response.send_message(f"今回のGMを除いたゲーム参加者は{num}人で登録しました\n"
                                     "誤入力の場合は再度登録しなおしてください\n"
                                     "※生存者数ではないのでゲーム進行により死亡キャラクターが\n"
@@ -362,7 +351,7 @@ class RoleSleMenu(discord.ui.View):
         gv.nick_to_data[itx.user.nick].role.name=select.values[0]
         gv.nick_to_data[itx.user.nick].role.id=role_name_to_para[select.values[0]]
         #登録済み人数のカウント
-        CoG.role_registered += 1
+        gv.role_registered += 1
         #役職ごとのメンバーのリストに格納
         memlis={"シロ":gv.Cast.siro,"クロ":gv.Cast.kuro,"アルターエゴ":gv.Cast.alterego,
                 "裏切者":gv.Cast.uragiri,"モノミ":gv.Cast.monomi,"超高校級の絶望":gv.Cast.tyozetsubo,

@@ -128,4 +128,10 @@ class CastLists:
     zantou:list[discord.Member]=dataclasses.field(default_factory=list)
 
 Cast=CastLists()
+#ゲーム進行にまつわるint変数
+player:int = 0 #（ゲームに参加しない場合のGMを除いた）プレイヤー数
+kill:int = 0 #　殺害数（ゲーム終了トリガーとして参照
+day:int = 0 #　何日目か（能力使用の条件として参照、司会進行メッセージで参照
+#出揃い待ち用のint変数
+role_registered:int = 0 #役職登録済みプレイヤー数（全員登録終わってからにクロ裏切者通知する用
 remaining_processes:int=0#夜時間に処理する対象選択や判別の数、全て処理してから相互作用の確認後、朝へ
