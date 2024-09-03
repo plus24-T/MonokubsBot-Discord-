@@ -91,6 +91,7 @@ class Night_Select(discord.ui.Select):#1人選んでそれぞれの能力の対�
         if exploded:
             await discord.utils.get(itx.guild.channels,name="食堂").send(f"が！\n{gv.Cast.monomi[0].nick}がモノミと共に身を挺して守ったため\n{osoware_yatsu}は助かりました\nしかし{gv.Cast.monomi[0].nick}はモノミと共に爆死してしまったようです")
             gv.Cast.monomi[0].remove_roles(discord.utils.get(itx.guild.roles,name="生存"))
+            gv.kill+=1
             gv.Cast.monomi[0].add_roles(discord.utils.get(itx.guild.roles,name="死亡"))
 #選択対象渡しView       
 class Night_View(discord.ui.View):
