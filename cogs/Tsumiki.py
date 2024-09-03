@@ -44,7 +44,7 @@ class Tsumiki(commands.Cog):#コマンド名、頭大文字でクラス作成
         for member in dead_members:
             select_op_dead_members.append(discord.SelectOption(label=member.nick))
         await itx.response.send_message("罪木蜜柑が遺体の検死をしています、少々お待ちください")
-        await discord.utils.get(itx.guild.channels,name=gv.Cast.kuro[0].nick).send(#最終的には役職チャンネルなくして個人のプライベートチャンネルに投稿するように変更予定
+        await discord.utils.get(itx.guild.channels,name="罪木蜜柑").send(
             "ロールを見る対象を選択してください",
             view=Tsumiki_View(options=select_op_dead_members)
             )
