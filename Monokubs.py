@@ -54,6 +54,7 @@ initial_extensions = [
     "Hagakure_ability",
     "Yasuke",
     "Rehearsal",
+    "Night",
 ]
 #botのインスタンス化と起動時の処理
 class MonokubsBot(commands.Bot):
@@ -122,6 +123,10 @@ async def on_member_update(before:discord.Member, after:discord.Member):
     if not added_roles.isdisjoint([ROLE_DIE]):
         if gv.nick_to_data[after.nick].role.id == 1:
             await discord.utils.get(guild.channels,name="食堂").send(f"『{after.nick}』はアルターエゴでした")
+    #クロ死亡時　自動ロール開示　ゲーム終了
+    if not added_roles.isdisjoint([ROLE_DIE]):
+        if gv.nick_to_data[after.nick].role.id == 6:
+            await discord.utils.get(guild.channels,name="食堂").send(f"『{after.nick}』はクロでした\n\n希望サイドの勝利です")
 
 #プレイヤー人数登録
 
@@ -455,6 +460,7 @@ async def ext_reload(
         "Hagakure_ability",
         "Yasuke",
         "Rehearsal",
+        "Night",
     ]
 ):
     await bot.reload_extension(f"cogs.{ext_name}")
@@ -464,52 +470,5 @@ async def ext_reload(
     except Exception as e:
         print(e)
     await itx.response.send_message(f"{ext_name}のリロードが完了しました",ephemeral=True)
-
-#アルターエゴの判別能力
-class AlEgo_Select(discord.ui.Select):
-    def __init__(self,options:list[discord.SelectOption]):
-        super().__init__(
-            placeholder="対象を選択",
-            options=options
-            )
-    async def callback(self, itx: discord.Interaction):
-        if len(discord.utils.get(itx.guild.roles,name="死亡").members)==0:
-           despair_threshold=3
-        else:
-           despair_threshold=2
-        role_id = gv.nick_to_data[self.values[0]].role.id
-        if role_id <=despair_threshold:
-            await itx.response.send_message(f"『{self.values[0]}』は希望〈キボウ〉サイドです")
-        else:
-            if role_id != 6:
-                await itx.response.send_message(f"『{self.values[0]}』は絶望〈ゼツボウ〉サイドです")
-            else:
-                #本当はここに絶望の残党の有無生存判定での分岐を追加する
-                await itx.response.send_message(f"『{self.values[0]}』は絶望〈ゼツボウ〉サイドです")
-
-        
-        
-
-class AlEgo_View(discord.ui.View):
-    def __init__(self,options:list[discord.SelectOption]):
-        super().__init__(timeout=180)
-
-        self.add_item(AlEgo_Select(options=options))
-
-@bot.tree.command(
-            name="alterego_ability",#coomand_nameがコマンドになる
-            description="アルターエゴの判別対象を選択、判別結果を返します",#コマンドリストに表示される説明文
-            guild=Test_GUILD
-            )
-async def alterego_ability(itx:discord.Interaction):#ここが処理内容、必要な引数とか設定する
-    living_members = discord.utils.get(itx.guild.roles,name="生存").members
-    select_op_living_members = []    #生存メンバーのリストから選択候補のリストを作成
-    for member in living_members:
-        select_op_living_members.append(discord.SelectOption(label=member.nick))#判別不可(モノクマのヘアゴム)対象を取り除く工程は未実装
-    await itx.response.send_message("アルターエゴが判別対象を選択しています")
-    await discord.utils.get(itx.guild.channels,name="アルターエゴ").send(#最終的には役職チャンネルなくして個人のプライベートチャンネルに投稿するように変更予定
-        "判別の対象を選択してください",
-        view=AlEgo_View(options=select_op_living_members)
-        )
 
 bot.run(os.getenv("TOKEN"))

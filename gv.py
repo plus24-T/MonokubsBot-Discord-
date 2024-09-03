@@ -15,10 +15,10 @@ class CharaData:
     item_1_id:int=0#所持アイテム一つ目 intじゃ情報足りないので辞書咬ませてデータクラスとかになりそう
     item_2_id:int=0#所持アイテム二つ目
     votes:int=1#所持票数（投票無効時0にする）
-    item_use:bool=1#各時間帯のアイテム使用権（Ture：未使用、False：使用済み）
+    item_use:bool=True#各時間帯のアイテム使用権（Ture：未使用、False：使用済み）
     not_attacked:bool=False#襲撃されない（True：されない、False：される）
     unidentifiable:bool=False#判別不可（True：されない、False：される）
-    escorted:bool=False#護衛されているか（True：されている、False：されていない）
+    escorted:bool=False#襲撃無効が付与されているか（True：されている、False：されていない）
     position=int#席の位置、生存人数の剰余で隣り合っているか判定する
 
 CC_02 = CharaData()
@@ -128,3 +128,4 @@ class CastLists:
     zantou:list[discord.Member]=dataclasses.field(default_factory=list)
 
 Cast=CastLists()
+remaining_processes:int=0#夜時間に処理する対象選択や判別の数、全て処理してから相互作用の確認後、朝へ
