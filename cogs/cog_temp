@@ -21,6 +21,6 @@ class Cog名(commands.Cog):#Cog名、任意だが分かりやすさのために�
 
 async def setup(bot:commands.Bot):
     await bot.add_cog(
-        Command名(bot),
+        Cog名(bot),
         guilds = [discord.Object(id=os.getenv("GUILD_ID"))]
         )
