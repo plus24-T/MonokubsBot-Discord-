@@ -35,7 +35,7 @@ class Kirigiri_Select(discord.ui.Select):
                         await itx.response.send_message(f"『{self.values[0]}』は絶望〈ゼツボウ〉サイドです")
                     else:
                         await itx.response.send_message(f"『{self.values[0]}』は希望〈キボウ〉サイドです")
-        await discord.utils.get(itx.guild.channels,name="食堂").send("占いが終わりました")
+        await discord.utils.get(itx.guild.channels,name="食堂").send("推理がまとめ終わったようです")
         self.disabled=True
 
 class Kirigiri_View(discord.ui.View):
