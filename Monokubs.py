@@ -373,7 +373,6 @@ class RoleSleMenu(discord.ui.View):
         custom_id="role_sle_menu"
     )
     async def select(self, itx: discord.Interaction, select: discord.ui.Select):
-        await itx.user.add_roles(discord.utils.get(itx.guild.roles, name=select.values[0]))#しばらくは確認用に置いておく
         #データの格納
         gv.nick_to_data[itx.user.nick].role.name=select.values[0]
         gv.nick_to_data[itx.user.nick].role.id=role_name_to_para[select.values[0]]
