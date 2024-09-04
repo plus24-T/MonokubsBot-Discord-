@@ -44,7 +44,7 @@ initial_extensions = [
     "Yasuke",
     "Rehearsal",
     "Night",
-    "Tsumiki"
+    "Tsumiki",
     "KillrianCamera",
     "Album",
     "SilentPhone",
@@ -183,7 +183,8 @@ class CharaSleMenu1(discord.ui.View): # UIキットを利用するためにdisco
         await interaction.response.send_message(
             f"よくきたな{select.values[0]}\nさっさと"
             f"{discord.utils.get(interaction.guild.channels,name=select.values[0]).mention}"
-            "に移動してロールを登録してくるんだな"
+            "に移動してロールを登録してくるんだな",
+            ephemeral=True
             )
 
 class CharaSleMenu2(discord.ui.View): # UIキットを利用するためにdiscord.ui.Viewを継承する
@@ -231,7 +232,8 @@ class CharaSleMenu2(discord.ui.View): # UIキットを利用するためにdisco
         await interaction.response.send_message(
             f"よくきたな{select.values[0]}\nさっさと"
             f"{discord.utils.get(interaction.guild.channels,name=select.values[0]).mention}"
-            "に移動してロールを登録してくるんだな"
+            "に移動してロールを登録してくるんだな",
+            ephemeral=True
             )
 
 class CharaSleMenuC1(discord.ui.View): # UIキットを利用するためにdiscord.ui.Viewを継承する
@@ -271,7 +273,8 @@ class CharaSleMenuC1(discord.ui.View): # UIキットを利用するためにdisc
         await interaction.response.send_message(
             f"よくきたな{select.values[0]}\nさっさと"
             f"{discord.utils.get(interaction.guild.channels,name=select.values[0]).mention}"
-            "に移動してロールを登録してくるんだな"
+            "に移動してロールを登録してくるんだな",
+            ephemeral=True
             )
 
 class CharaSleMenuC2(discord.ui.View): # UIキットを利用するためにdiscord.ui.Viewを継承する
@@ -311,7 +314,8 @@ class CharaSleMenuC2(discord.ui.View): # UIキットを利用するためにdisc
         await interaction.response.send_message(
             f"よくきたな{select.values[0]}\nさっさと"
             f"{discord.utils.get(interaction.guild.channels,name=select.values[0]).mention}"
-            "に移動してロールを登録してくるんだな"
+            "に移動してロールを登録してくるんだな",
+            ephemeral=True
             )
 
 @bot.tree.command(name="monotaro",
