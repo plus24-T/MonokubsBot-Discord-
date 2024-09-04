@@ -50,6 +50,7 @@ initial_extensions = [
     "SilentPhone",
     "Kirigiri_ability",
     "Megane",
+    "Add_dead_role",
 ]
 #botのインスタンス化と起動時の処理
 class MonokubsBot(commands.Bot):
@@ -462,6 +463,7 @@ async def ext_reload(
         "SilentPhone",
         "Kirigiri_ability",
         "Megane",
+        "Add_dead_role",
     ]
 ):
     await bot.reload_extension(f"cogs.{ext_name}")
