@@ -186,6 +186,10 @@ class CharaSleMenu1(discord.ui.View): # UIキットを利用するためにdisco
             "に移動してロールを登録してくるんだな",
             ephemeral=True
             )
+        await discord.utils.get(interaction.guild.channels,name=select.values[0]).send(
+            "ロール、ノ登録ヲ、オ願イスルヨ",
+            view=RoleSleMenu()
+        )
 
 class CharaSleMenu2(discord.ui.View): # UIキットを利用するためにdiscord.ui.Viewを継承する
     def __init__(self): # Viewにはtimeoutがあり、初期値は180(s)である
@@ -235,6 +239,10 @@ class CharaSleMenu2(discord.ui.View): # UIキットを利用するためにdisco
             "に移動してロールを登録してくるんだな",
             ephemeral=True
             )
+        await discord.utils.get(interaction.guild.channels,name=select.values[0]).send(
+            "ロール、ノ登録ヲ、オ願イスルヨ",
+            view=RoleSleMenu()
+        )
 
 class CharaSleMenuC1(discord.ui.View): # UIキットを利用するためにdiscord.ui.Viewを継承する
     def __init__(self): # Viewにはtimeoutがあり、初期値は180(s)である
@@ -276,6 +284,10 @@ class CharaSleMenuC1(discord.ui.View): # UIキットを利用するためにdisc
             "に移動してロールを登録してくるんだな",
             ephemeral=True
             )
+        await discord.utils.get(interaction.guild.channels,name=select.values[0]).send(
+            "ロール、ノ登録ヲ、オ願イスルヨ",
+            view=RoleSleMenu()
+        )
 
 class CharaSleMenuC2(discord.ui.View): # UIキットを利用するためにdiscord.ui.Viewを継承する
     def __init__(self): # Viewにはtimeoutがあり、初期値は180(s)である
@@ -317,6 +329,10 @@ class CharaSleMenuC2(discord.ui.View): # UIキットを利用するためにdisc
             "に移動してロールを登録してくるんだな",
             ephemeral=True
             )
+        await discord.utils.get(interaction.guild.channels,name=select.values[0]).send(
+            "ロール、ノ登録ヲ、オ願イスルヨ",
+            view=RoleSleMenu()
+        )
 
 @bot.tree.command(name="monotaro",
                   description="キャラクターを選択し、Botに登録するメニューを出します",
