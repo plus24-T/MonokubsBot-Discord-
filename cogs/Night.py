@@ -88,12 +88,16 @@ class Night_Select(discord.ui.Select):#1人選んでそれぞれの能力の対�
                 pass
         #襲撃先発表メッセージ
         await discord.utils.get(itx.guild.channels,name="食堂").send(f"{osoware_yatsu}が襲撃されました")
-        #モノミ爆死メッセージおよび死亡ロール付与        
-        if exploded:
-            await discord.utils.get(itx.guild.channels,name="食堂").send(f"が！\n{gv.Cast.monomi[0].nick}がモノミと共に身を挺して守ったため\n{osoware_yatsu}は助かりました\nしかし{gv.Cast.monomi[0].nick}はモノミと共に爆死してしまったようです")
-            gv.Cast.monomi[0].remove_roles(discord.utils.get(itx.guild.roles,name="生存"))
-            gv.kill+=1
-            gv.Cast.monomi[0].add_roles(discord.utils.get(itx.guild.roles,name="死亡"))
+        #襲撃無効メッセージ
+        if gv.nick_to_data[osoware_yatsu].escorted:
+            await discord.utils.get(itx.guild.channels,name="食堂").send(f"しかし{osoware_yatsu}には襲撃無効が付与されていたため\n襲撃は無効になりました")
+        else:
+            #モノミ爆死メッセージおよび死亡ロール付与        
+            if exploded:
+                await discord.utils.get(itx.guild.channels,name="食堂").send(f"が！\n{gv.Cast.monomi[0].nick}がモノミと共に身を挺して守ったため\n{osoware_yatsu}は助かりました\nしかし{gv.Cast.monomi[0].nick}はモノミと共に爆死してしまったようです")
+                gv.Cast.monomi[0].remove_roles(discord.utils.get(itx.guild.roles,name="生存"))
+                gv.kill+=1
+                gv.Cast.monomi[0].add_roles(discord.utils.get(itx.guild.roles,name="死亡"))
 #選択対象渡しView       
 class Night_View(discord.ui.View):
     def __init__(self,options:list[discord.SelectOption]):
