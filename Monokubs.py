@@ -70,6 +70,7 @@ class MonokubsBot(commands.Bot):
         self.add_view(CharaSleMenu2())#Botを立ち上げなおしてもボタン類が機能するようになる
         self.add_view(CharaSleMenuC1())
         self.add_view(CharaSleMenuC2())
+        self.add_view(PlayerCountRegistration())
 
         for cog in initial_extensions:
             await self.load_extension(f"cogs.{cog}")# コマンドやイベント処理のBotへの取り込み
@@ -146,7 +147,8 @@ class PlayerCountRegistration(discord.ui.View):
             discord.SelectOption(label="14",value=14),
             discord.SelectOption(label="15",value=15),
             discord.SelectOption(label="16",value=16),
-        ]
+        ],
+        custom_id="player_count_registration"
     )
     async def select(self,itx:discord.Interaction,select:discord.ui.Select):
         gv.player=select.values[0]
