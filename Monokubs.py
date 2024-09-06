@@ -51,6 +51,7 @@ initial_extensions = [
     "Kirigiri_ability",
     "Megane",
     "Add_dead_role",
+    "CardList",
 ]
 #botのインスタンス化と起動時の処理
 class MonokubsBot(commands.Bot):
@@ -125,18 +126,53 @@ async def on_member_update(before:discord.Member, after:discord.Member):
             await discord.utils.get(guild.channels,name="食堂").send(f"『{after.nick}』はクロでした\n\n希望サイドの勝利です")
 
 #プレイヤー人数登録
+class PlayerCountRegistration(discord.ui.View):
+    def __init__(self):
+        super().__init__(timeout=None)
+    @discord.ui.select(
+        cls=discord.ui.Select,
+        placeholder="プレイイヤー数を選択",
+        options=[
+            discord.SelectOption(label="4",value=4),
+            discord.SelectOption(label="5",value=5),
+            discord.SelectOption(label="6",value=6),
+            discord.SelectOption(label="7",value=7),
+            discord.SelectOption(label="8",value=8),
+            discord.SelectOption(label="9",value=9),
+            discord.SelectOption(label="10",value=10),
+            discord.SelectOption(label="11",value=11),
+            discord.SelectOption(label="12",value=12),
+            discord.SelectOption(label="13",value=13),
+            discord.SelectOption(label="14",value=14),
+            discord.SelectOption(label="15",value=15),
+            discord.SelectOption(label="16",value=16),
+        ]
+    )
+    async def select(self,itx:discord.Interaction,select:discord.ui.Select):
+        gv.player=select.values[0]
+        await itx.response.send_message(f"新入生は{select.values[0]}人だな\n"
+                                    "（誤入力の場合は再度登録しなおしてください\n"
+                                    "※生存者数ではないのでゲーム進行により死亡キャラクターが\n"
+                                    "発生しても更新する必要はありません）")
+        embedtxt = discord.Embed(
+        title="キャラクター選択",
+        description="おはっくまー！\nオマエラはどちらから来た誰さん？\n\n（キャラカードを参照し、\n登場作品に対応したメニューからキャラクターを選択）"
+        )
+        await itx.followup.send(embed=embedtxt,view=CharaSleMenuC1())
+        await itx.followup.send(view=CharaSleMenuC2())
+        await itx.followup.send(view=CharaSleMenu1())
+        await itx.followup.send(view=CharaSleMenu2())
 
-@bot.tree.command(name="input_number_of_players",
-                  description="プレイ人数(GM除く)をbotに登録します",
+
+@bot.tree.command(name="プレイヤー数の登録メニュー",
+                  description="プレイ人数(GM除く)をbotに登録するメニューを出す",
                   guild=Test_GUILD
                   )
-async def chara_select(itx:discord.Interaction,num:Literal[4,5,6,7,8,9,10,11,12,13,14,15,16]):
+async def player_count_registration(itx:discord.Interaction):
 
-    gv.player=num
-    await itx.response.send_message(f"今回のGMを除いたゲーム参加者は{num}人で登録しました\n"
-                                    "誤入力の場合は再度登録しなおしてください\n"
-                                    "※生存者数ではないのでゲーム進行により死亡キャラクターが\n"
-                                    "発生しても更新する必要はありません")
+   
+    await itx.response.send_message("今年の新入生は何人かな？\n（プレイヤー数を選択してください）",
+                                    view=PlayerCountRegistration())
 
 # キャラクターセレクト
 class CharaSleMenu1(discord.ui.View): # UIキットを利用するためにdiscord.ui.Viewを継承する
@@ -341,7 +377,7 @@ class CharaSleMenuC2(discord.ui.View): # UIキットを利用するためにdisc
 async def chara_select(itx:discord.Interaction):
     embedtxt = discord.Embed(
         title="キャラクター選択",
-        description="おはっくまー！\nオマエはどちらから来た誰さん？\n\n（キャラカードを参照し、\n登場作品に対応したメニューからキャラクターを選択）"
+        description="おはっくまー！\nオマエラはどちらから来た誰さん？\n\n（キャラカードを参照し、\n登場作品に対応したメニューからキャラクターを選択）"
         )
 
     await itx.response.send_message(embed=embedtxt,view=CharaSleMenuC1())
@@ -483,6 +519,7 @@ async def ext_reload(
         "Kirigiri_ability",
         "Megane",
         "Add_dead_role",
+        "CardList",
     ]
 ):
     await bot.reload_extension(f"cogs.{ext_name}")
