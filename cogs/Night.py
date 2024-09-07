@@ -1,5 +1,4 @@
 import os
-from dotenv import load_dotenv
 
 import discord
 from discord import app_commands
@@ -10,7 +9,6 @@ from typing import List
 
 import gv
 
-load_dotenv()
 
 #対象のセレクトメニュー及び朝時間開始時の処理
 class Night_Select(discord.ui.Select):#1人選んでそれぞれの能力の対象にするため使用者で分岐させる
@@ -149,5 +147,5 @@ class Night(commands.Cog):
 async def setup(bot:commands.Bot):
     await bot.add_cog(
         Night(bot),
-        guilds = [discord.Object(id=os.getenv("GUILD_ID"))]
+        guilds = [discord.Object(id=bot.useGuildId)]
         )
