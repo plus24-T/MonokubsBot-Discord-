@@ -6,7 +6,6 @@ from discord import app_commands
 from discord.ext import commands
 from discord.ext.ui import View,ViewTracker, MessageProvider,PageView,PaginationView,Message
 
-load_dotenv()
 #試作中　動かないよ！
 
 
