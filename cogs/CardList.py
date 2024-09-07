@@ -1,6 +1,5 @@
 import os 
 import discord.context_managers
-from dotenv import load_dotenv
 
 import discord
 from discord import app_commands
@@ -29,5 +28,5 @@ class CardList(commands.Cog):
 async def setup(bot:commands.Bot):
     await bot.add_cog(
         CardList(bot),
-        guilds = [discord.Object(id=os.getenv("GUILD_ID"))]
+        guilds = [discord.Object(id=bot.useGuildId)]
         )

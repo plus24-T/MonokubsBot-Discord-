@@ -1,5 +1,4 @@
 import os
-from dotenv import load_dotenv
 
 import discord
 from discord import app_commands
@@ -10,7 +9,6 @@ from typing import List
 
 import gv
 
-load_dotenv()
 
 class Rehearsal_Select(discord.ui.Select):
     def __init__(self,options:list[discord.SelectOption]):
@@ -57,5 +55,5 @@ class Rehearsal(commands.Cog):#コマンド名、頭大文字でクラス作成
 async def setup(bot:commands.Bot):
     await bot.add_cog(
         Rehearsal(bot),
-        guilds = [discord.Object(id=os.getenv("GUILD_ID"))]
+        guilds = [discord.Object(id=bot.useGuildId)]
         )

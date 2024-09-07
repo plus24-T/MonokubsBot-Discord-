@@ -1,12 +1,10 @@
 import os 
 import discord.context_managers
-from dotenv import load_dotenv
 
 import discord
 from discord import app_commands
 from discord.ext import commands
 
-load_dotenv()
 
 class Cog名(commands.Cog):#Cog名、任意だが分かりやすさのためにコマンドが一つなら頭大文字でクラス作成
     def __init__(self, bot:commands.Bot):
@@ -22,5 +20,5 @@ class Cog名(commands.Cog):#Cog名、任意だが分かりやすさのために�
 async def setup(bot:commands.Bot):
     await bot.add_cog(
         Cog名(bot),
-        guilds = [discord.Object(id=os.getenv("GUILD_ID"))]
+        guilds = [discord.Object(id=bot.useGuildId)]
         )

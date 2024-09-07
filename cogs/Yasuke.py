@@ -1,12 +1,10 @@
 import os 
 import discord.context_managers
-from dotenv import load_dotenv
 
 import discord
 from discord import app_commands
 from discord.ext import commands
 
-load_dotenv()
 
 # 全ロール剥奪（松田夜助）
 class Yasuke(commands.Cog):#コマンド名、頭大文字でクラス作成
@@ -32,5 +30,5 @@ class Yasuke(commands.Cog):#コマンド名、頭大文字でクラス作成
 async def setup(bot:commands.Bot):
     await bot.add_cog(
         Yasuke(bot),
-        guilds = [discord.Object(id=os.getenv("GUILD_ID"))]
+        guilds = [discord.Object(id=bot.useGuildId)]
         )
