@@ -1,5 +1,5 @@
-# ����Ƀ��C�u����
+# 動作に必要なパッケージをpipでインストールするためのリスト
 discord
 discord-ext-ui
 python-dotenv
-Paginator
+discord.py-pagination
