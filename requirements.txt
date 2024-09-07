@@ -1,0 +1,4 @@
+# “®ì‚Éƒ‰ƒCƒuƒ‰ƒŠ
+discord
+discord-ext-ui
+python-dotenv

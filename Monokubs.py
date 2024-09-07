@@ -1,27 +1,36 @@
 import os
+import sys
 import collections
 import dataclasses
+from dotenv import load_dotenv
 from typing import List, Literal
 import discord
 from discord.ext import commands
 import gv 
-import sys
 
 guildId : str
 tokenId : str
 
+#環境変数の読み込み
+if os.path.isfile('.env'):
+    load_dotenv()
+    print('.envファイルからトークン・サーバー情報を読み込みます')
+    guildId=os.getenv("GUILD_ID")
+    tokenId=os.getenv("TOKEN")
+
 # 引数解析
 args = sys.argv
 for arg in args:
-    # -delPriv でstart時にこのbotから見えている１：１対話用チャンネルを消す
     if '=' in arg:
         sentences = arg.split('=')
         if ('-guildId' in sentences[0]):
+            print('コマンドラインオプションによりGuildIdを設定')
             guildId = str(sentences[1])
         if ('-tokenId' in sentences[0]):
+            print('コマンドラインオプションによりTokenIdを設定')
             tokenId = str(sentences[1])
 
-Test_GUILD = discord.Object(id=guildId)#テスト鯖のIDからテスト鯖オブジェクトを取得
+Test_GUILD = discord.Object(id=guildId)
 
 #キャラの役職パラメータと役職名の変換辞書
 role_para_to_name:dict = {
