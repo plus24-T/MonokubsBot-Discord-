@@ -1,5 +1,4 @@
 import os 
-from dotenv import load_dotenv
 
 from typing import List, Literal
 
@@ -10,7 +9,6 @@ from discord.ext import commands
 
 import gv
 
-load_dotenv()
 
 class ItemEffectRegistration(commands.Cog):#Cog名、任意だが分かりやすさのためにコマンドが一つなら頭大文字でクラス作成
     def __init__(self, bot:commands.Bot):
@@ -32,5 +30,5 @@ class ItemEffectRegistration(commands.Cog):#Cog名、任意だが分かりやす
 async def setup(bot:commands.Bot):
     await bot.add_cog(
         ItemEffectRegistration(bot),
-        guilds = [discord.Object(id=os.getenv("GUILD_ID"))]
+        guilds = [discord.Object(id=bot.useGuildId)]
         )

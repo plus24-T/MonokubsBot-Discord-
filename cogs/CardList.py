@@ -1,13 +1,11 @@
 import os 
 import discord.context_managers
-from dotenv import load_dotenv
 
 import discord
 from discord import app_commands
 from discord.ext import commands
 from discord.ext.ui import View,ViewTracker, MessageProvider,PageView,PaginationView,Message
 
-load_dotenv()
 #試作中　動かないよ！
 
 
@@ -44,5 +42,5 @@ class CardList(commands.Cog):
 async def setup(bot:commands.Bot):
     await bot.add_cog(
         CardList(bot),
-        guilds = [discord.Object(id=os.getenv("GUILD_ID"))]
+        guilds = [discord.Object(id=bot.useGuildId)]
         )

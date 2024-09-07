@@ -1,13 +1,11 @@
 import os 
 import discord.context_managers
-from dotenv import load_dotenv
 
 import discord
 from discord import app_commands
 from discord.ext import commands
 import gv
 
-load_dotenv()
 
 class SilentPhone_Select(discord.ui.Select):
     def __init__(self,options:list[discord.SelectOption]):
@@ -52,5 +50,5 @@ class SilentPhone(commands.Cog):#コマンド名、頭大文字でクラス作�
 async def setup(bot:commands.Bot):
     await bot.add_cog(
         SilentPhone(bot),
-        guilds = [discord.Object(id=os.getenv("GUILD_ID"))]
+        guilds = [discord.Object(id=bot.useGuildId)]
         )

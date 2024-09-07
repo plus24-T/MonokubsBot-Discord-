@@ -1,4 +1,5 @@
 import os
+import sys
 import collections
 import dataclasses
 from dotenv import load_dotenv
@@ -7,9 +8,29 @@ import discord
 from discord.ext import commands
 import gv 
 
-load_dotenv()#環境変数の読み込み
+guildId : str
+tokenId : str
 
-Test_GUILD = discord.Object(id=os.getenv("GUILD_ID"))#テスト鯖のIDからテスト鯖オブジェクトを取得
+#環境変数の読み込み
+if os.path.isfile('.env'):
+    load_dotenv()
+    print('.envファイルからトークン・サーバー情報を読み込みます')
+    guildId=os.getenv("GUILD_ID")
+    tokenId=os.getenv("TOKEN")
+
+# 引数解析
+args = sys.argv
+for arg in args:
+    if '=' in arg:
+        sentences = arg.split('=')
+        if ('-guildId' in sentences[0]):
+            print('コマンドラインオプションによりGuildIdを設定')
+            guildId = str(sentences[1])
+        if ('-tokenId' in sentences[0]):
+            print('コマンドラインオプションによりTokenIdを設定')
+            tokenId = str(sentences[1])
+
+Test_GUILD = discord.Object(id=guildId)
 
 #キャラの役職パラメータと役職名の変換辞書
 role_para_to_name:dict = {
@@ -55,12 +76,14 @@ initial_extensions = [
 ]
 #botのインスタンス化と起動時の処理
 class MonokubsBot(commands.Bot):
-    def __init__(self):
+    useGuildId : str
+
+    def __init__(self, guildId):
         super().__init__(
             command_prefix=commands.when_mentioned_or('!'),# メンション若しくは!でコマンドを認識する　あんまり使わないけど
             intents=discord.Intents.all()# すべてのインテント権限をTureにする
             )
-
+        self.useGuildId = guildId
 
     # セットアップ時の処理
     async def setup_hook(self) -> None:
@@ -88,7 +111,7 @@ class MonokubsBot(commands.Bot):
         print(f'Logged in as {self.user} (ID: {self.user.id})')#ログインしたやでとターミナルに出力
         print('------')
 
-bot = MonokubsBot()
+bot = MonokubsBot(guildId)
 
 #自動リネーム機能　及び　ロール付与に反応するやつ全般　最終的に死亡時処理だけになりそう
 @bot.event 
@@ -532,4 +555,4 @@ async def ext_reload(
         print(e)
     await itx.response.send_message(f"{ext_name}のリロードが完了しました",ephemeral=True)
 
-bot.run(os.getenv("TOKEN"))
+bot.run(tokenId)
