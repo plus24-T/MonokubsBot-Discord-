@@ -1,4 +1,5 @@
-# “®ì‚Éƒ‰ƒCƒuƒ‰ƒŠ
+# ï¿½ï¿½ï¿½ï¿½Éƒï¿½ï¿½Cï¿½uï¿½ï¿½ï¿½ï¿½
 discord
 discord-ext-ui
 python-dotenv
+Paginator
