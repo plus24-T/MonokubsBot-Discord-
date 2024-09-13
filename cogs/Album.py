@@ -16,7 +16,7 @@ class Album_Select(discord.ui.Select):
             )
     async def callback(self, itx: discord.Interaction):
         #プレイヤー数による患者との分岐は後回し（たぶんしばらく要らないため）
-        if gv.nick_to_data[self.values[0]].role.id == 7:
+        if gv.get_chara_data(self.values[0]).role == gv.CharaRole.URAGIRI:
             await itx.response.send_message(f"『{self.values[0]}』は 裏切者 です")
         else:
             await itx.response.send_message(f"『{self.values[0]}』は 裏切者 ではありません")

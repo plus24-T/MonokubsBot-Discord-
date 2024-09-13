@@ -1,25 +1,74 @@
 import discord
 
+from enum import Enum, auto
 import dataclasses
-#参加キャラのデータを格納するクラス
-@dataclasses.dataclass#役職のデータを格納するクラス
-class CharaRole:
-    id:int=0#役職に対応した数字、下記変換辞書参照
-    name:str="未定"#役職の名前
+
+# 共通利用の定数宣言用ファイル
+
+# 数値を文字列で記述するためのEnum（列挙型）
+# ゲーム進行上の役職
+class CharaRole(Enum):
+    SIRO = auto()
+    ALTEREGO = auto()
+    MIRAIKIKAN = auto() #ここまで希望判定
+    TYOZETSUBO = auto() #死亡者の有無で判別の閾値を変更して対応
+    ZETSUBOBYO = auto() #ここから絶望判定
+    MONOMI = auto()
+    KURO = auto()
+    URAGIRI = auto()
+    ZAKO = auto()
+    ZANTOU = auto()
+    UNKNOWN = 999
+    
+    # 変換用辞書
+    _nameDict : dict= {
+        SIRO:"シロ",
+        ALTEREGO:"アルターエゴ",
+        MIRAIKIKAN:"未来機関",
+        TYOZETSUBO:"超高校級の絶望",
+        ZETSUBOBYO:"絶望病患者",
+        MONOMI:"モノミ",
+        KURO:"クロ",
+        URAGIRI:"裏切者",
+        ZAKO:"ザコケモノ",
+        ZANTOU:"絶望の残党",
+    }
+
+    # 日本名を取得
+    def to_japanese_name(self):
+        return CharaRole._nameDict[self]
+    
+    # 日本名 → Enum値
+    @classmethod
+    def parse(cls, jap):
+        for key, value in CharaRole._nameDict.items():
+            if value == jap:
+                return key
+        return CharaRole.UNKNOWN
+    
+    # 希望判定をする閾値（Enumのインデックス）を取得
+    @classmethod
+    def get_despair_threshold(any_member_died : bool):
+        if any_member_died:
+            return CharaRole.MIRAIKIKAN
+        return CharaRole.TYOZETSUBO
+
+
+# 参加キャラのデータを格納するクラス
 @dataclasses.dataclass
 class CharaData:
-    role:CharaRole= dataclasses.field(default_factory=CharaRole)#役職idとname
-    chara_ability:str=""#キャラ名（石田のコピー時ここを変えて参照する）
-    ability_use:bool=True#キャラ能力使用状況（True：未使用、False：使用済み）
-    num_of_items:int=0#所持アイテム数
-    item_1_id:int=0#所持アイテム一つ目 intじゃ情報足りないので辞書咬ませてデータクラスとかになりそう
-    item_2_id:int=0#所持アイテム二つ目
-    votes:int=1#所持票数（投票無効時0にする）
-    item_use:bool=True#各時間帯のアイテム使用権（Ture：未使用、False：使用済み）
-    not_attacked:bool=False#襲撃されない（True：されない、False：される）
-    unidentifiable:bool=False#判別不可（True：されない、False：される）
-    escorted:bool=False#襲撃無効が付与されているか（True：されている、False：されていない）
-    position=int#席の位置、生存人数の剰余で隣り合っているか判定する
+    role : CharaRole = dataclasses.field(default_factory=lambda: CharaRole.UNKNOWN) #役職id
+    chara_ability : str = "" #キャラ名（石田のコピー時ここを変えて参照する）
+    ability_use : bool = True #キャラ能力使用状況（True：未使用、False：使用済み）
+    num_of_items : int = 0 #所持アイテム数
+    item_1_id : int = 0 #所持アイテム一つ目 intじゃ情報足りないので辞書咬ませてデータクラスとかになりそう
+    item_2_id : int = 0 #所持アイテム二つ目
+    votes : int = 1 #所持票数（投票無効時0にする）
+    item_use : bool = True #各時間帯のアイテム使用権（Ture：未使用、False：使用済み）
+    not_attacked : bool = False #襲撃されない（True：されない、False：される）
+    unidentifiable : bool = False #判別不可（True：されない、False：される）
+    escorted : bool = False #襲撃無効が付与されているか（True：されている、False：されていない）
+    position : int = 0 #席の位置、生存人数の剰余で隣り合っているか判定する
 
 CC_02 = CharaData()
 CC_03 = CharaData()
@@ -67,7 +116,7 @@ MCC_09 = CharaData()
 MCC_10 = CharaData()
 
 #キャラ名からデータクラスへの変換辞書
-nick_to_data={
+_nickToDataDic={
     "苗木誠":CC_02,
     "舞園さやか":CC_03,
     "桑田怜恩":CC_04,
@@ -113,9 +162,13 @@ nick_to_data={
     "七海千秋：唾吐き":MCC_06,
     "西園寺日寄子：てへぺろ":MCC_04
 }    
+
+def get_chara_data(charaName : str):
+    return _nickToDataDic[charaName]
+
 #各役職がどのキャラクターかを格納する変数　キャスト（配役）リスト
 @dataclasses.dataclass
-class CastLists:
+class CharaRoleList:
     siro:list[discord.Member]=dataclasses.field(default_factory=list)
     alterego:list[discord.Member]=dataclasses.field(default_factory=list)
     miraikikan:list[discord.Member]=dataclasses.field(default_factory=list)
@@ -127,12 +180,22 @@ class CastLists:
     zako:list[discord.Member]=dataclasses.field(default_factory=list)
     zantou:list[discord.Member]=dataclasses.field(default_factory=list)
 
-Cast=CastLists()
-#ゲーム進行にまつわるint変数
-player:int = 0 #（ゲームに参加しない場合のGMを除いた）プレイヤー数
-kill:int = 0 #　殺害数（ゲーム終了トリガーとして参照
-day:int = 0 #　何日目か（能力使用の条件として参照、司会進行メッセージで参照
-#出揃い待ち用のint変数
-role_registered:int = 0 #役職登録済みプレイヤー数（全員登録終わってからにクロ裏切者通知する用
-remaining_processes:int=0#夜時間に処理する対象選択や判別の数、全て処理してから相互作用の確認後、朝へ
-ok_mati:int=0#裏切者の開始時情報確認待ち用、全員確認したら0日目の昼を開始する
+chara_role_list = CharaRoleList()
+
+#ゲーム進行にまつわる変数
+@dataclasses.dataclass
+class TableData:
+    player_count : int = 0 #（ゲームに参加しない場合のGMを除いた）プレイヤー数
+    kill_count : int = 0 #　殺害数（ゲーム終了トリガーとして参照
+    day_count : int = 0 #　何日目か（能力使用の条件として参照、司会進行メッセージで参照
+
+table_data = TableData()
+
+#出揃い待ち用の進行用の変数
+@dataclasses.dataclass
+class ProgressData:
+    role_registered : int = 0 #役職登録済みプレイヤー数（全員登録終わってからにクロ裏切者通知する用
+    remaining_processes : int = 0 #夜時間に処理する対象選択や判別の数、全て処理してから相互作用の確認後、朝へ
+    ok_mati : int = 0 #裏切者の開始時情報確認待ち用、全員確認したら0日目の昼を開始する
+
+prog = ProgressData()

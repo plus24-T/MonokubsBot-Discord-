@@ -15,7 +15,7 @@ class SilentPhone_Select(discord.ui.Select):
             disabled=False
             )
     async def callback(self, itx: discord.Interaction):
-        if gv.nick_to_data[self.values[0]].role.id == 0:
+        if gv.get_chara_data(self.values[0]).role == gv.CharaRole.SIRO:
             await itx.response.send_message(f"『{self.values[0]}』は シロ です")
         else:
             await itx.response.send_message(f"『{self.values[0]}』は シロ ではありません")

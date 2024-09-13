@@ -19,11 +19,11 @@ class Rehearsal_Select(discord.ui.Select):
             )
     async def callback(self, itx: discord.Interaction):
         await itx.response.send_message(f"『{self.values[0]}』の部屋を荒らしました")
-        gv.day+=1
+        gv.table_data.day+=1
         await discord.utils.get(itx.guild.channels,name=self.values[0]).send(
             "あなたの部屋が荒らされました、手持ちのアイテムを1枚選択して裏向きのまま捨てて下さい"
             )
-        await discord.utils.get(itx.guild.channels,name="食堂").send(f"オハヨウゴザイマス\n{gv.day}日目の朝時間になりました")
+        await discord.utils.get(itx.guild.channels,name="食堂").send(f"オハヨウゴザイマス\n{gv.table_data.day}日目の朝時間になりました")
         await discord.utils.get(itx.guild.channels,name="食堂").send(f"{self.values[0]}の部屋が荒らされました")
         self.disabled=True
 
@@ -47,7 +47,7 @@ class Rehearsal(commands.Cog):#コマンド名、頭大文字でクラス作成
         for member in living_members:
             select_op_living_members.append(discord.SelectOption(label=member.nick))
         await itx.response.send_message("クロが下見の対象を選択しています")
-        await discord.utils.get(itx.guild.channels,name=gv.Cast.kuro[0].nick).send(
+        await discord.utils.get(itx.guild.channels,name=gv.chara_role_list.kuro[0].nick).send(
             "下見の対象を選択してください",
             view=Rehearsal_View(options=select_op_living_members)
             )

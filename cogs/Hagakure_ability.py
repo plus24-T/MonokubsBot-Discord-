@@ -16,7 +16,7 @@ class Hagakure_Select(discord.ui.Select):
             )
     async def callback(self, itx: discord.Interaction):
         #プレイヤー数による患者との分岐は後回し（たぶんしばらく要らないため）
-        if gv.nick_to_data[self.values[0]].role.id == 5:
+        if gv.get_chara_data(self.values[0]).role == gv.CharaRole.MONOMI:
             await itx.response.send_message(f"『{self.values[0]}』は モノミ だべ！")
         else:
             await itx.response.send_message(f"『{self.values[0]}』は モノミ じゃねえべ！")

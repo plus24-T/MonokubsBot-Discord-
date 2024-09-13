@@ -5,7 +5,7 @@ import discord
 from discord import app_commands
 from discord.ext import commands
 import gv
-
+import utils
 
 class Megane_Select(discord.ui.Select):
     def __init__(self,options:list[discord.SelectOption]):
@@ -15,24 +15,13 @@ class Megane_Select(discord.ui.Select):
             disabled=False
             )
     async def callback(self, itx: discord.Interaction):
-        if len(discord.utils.get(itx.guild.roles,name="死亡").members)==0:
-            despair_threshold=3
+        target_chara_name = self.values[0]
+        is_despair = utils.check_despair(itx, target_chara_name)
+        if is_despair:
+            await itx.response.send_message(f"『{target_chara_name}』は絶望〈ゼツボウ〉サイドです")
         else:
-            despair_threshold=2
-
-        if gv.nick_to_data[self.values[0]].role.id <=despair_threshold:
-            await itx.response.send_message(f"『{self.values[0]}』は希望〈キボウ〉サイドです")
-        else:
-            if gv.nick_to_data[self.values[0]].role.id != 6:
-                await itx.response.send_message(f"『{self.values[0]}』は絶望〈ゼツボウ〉サイドです")
-            else:
-                if len(gv.Cast.zantou)==0:
-                    await itx.response.send_message(f"『{self.values[0]}』は絶望〈ゼツボウ〉サイドです")
-                else:
-                    if gv.Cast.zantou[0] in discord.utils.get(itx.guild.roles,name="死亡").members:
-                        await itx.response.send_message(f"『{self.values[0]}』は絶望〈ゼツボウ〉サイドです")
-                    else:
-                        await itx.response.send_message(f"『{self.values[0]}』は希望〈キボウ〉サイドです")
+            await itx.response.send_message(f"『{target_chara_name}』は希望〈キボウ〉サイドです")
+        
         await discord.utils.get(itx.guild.channels,name="食堂").send("判別が終わりました")
         self.disabled=True
 
@@ -51,7 +40,7 @@ class Megane(commands.Cog):#コマンド名、頭大文字でクラス作成
             description="おでこのメガネを使用します"#コマンドリストに表示される説明文            
             )
     async def megane(self,itx:discord.Interaction):
-        if gv.Cast.alterego[0] in discord.utils.get(itx.guild.roles,name="生存").members:
+        if gv.chara_role_list.alterego[0] in discord.utils.get(itx.guild.roles,name="生存").members:
             await itx.response.send_message("おでこのメガネで、デコデコ、デコリ～ン！\n（使用条件：アルターエゴの死亡　を満たしていません）")
             pass 
         living_members = discord.utils.get(itx.guild.roles,name="生存").members

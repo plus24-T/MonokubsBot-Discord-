@@ -7,6 +7,8 @@ from typing import List, Literal
 import discord
 from discord.ext import commands
 import gv 
+import views
+import utils
 
 guildId : str
 tokenId : str
@@ -32,33 +34,7 @@ for arg in args:
 
 Test_GUILD = discord.Object(id=guildId)
 
-#キャラの役職パラメータと役職名の変換辞書
-role_para_to_name:dict = {
-    0:"シロ",
-    1:"アルターエゴ",
-    2:"未来機関",#ここまで希望判定
-    3:"超高校級の絶望",#死亡者の有無で判別の閾値を変更して対応
-    4:"絶望病患者",#ここから絶望判定
-    5:"モノミ",
-    6:"クロ",
-    7:"裏切者",
-    8:"ザコケモノ",
-    9:"絶望の残党"
-    }
-role_name_to_para:dict = {
-    "シロ":0,
-    "アルターエゴ":1,
-    "未来機関":2,#ここまで希望判定
-    "超高校級の絶望":3,#死亡者の有無で判別の閾値を変更して対応
-    "絶望病患者":4,#ここから絶望判定
-    "モノミ":5,
-    "クロ":6,
-    "裏切者":7,
-    "ザコケモノ":8,
-    "絶望の残党":9
-    }
-
-        # 読み込むcogsのリストを作る
+# 読み込むcogsのリストを作る
 initial_extensions = [
     "ext_test",
     "Hagakure_ability",
@@ -88,7 +64,7 @@ class MonokubsBot(commands.Bot):
     # セットアップ時の処理
     async def setup_hook(self) -> None:
 
-        self.add_view(RoleSleMenu())# view(ボタンやセレクトメニュー)のBotへの取り込み
+        self.add_view(views.RoleSleMenu(bot))# view(ボタンやセレクトメニュー)のBotへの取り込み
         self.add_view(CharaSleMenu1())#Viewにカスタムidを設定したうえでこれをしておくと
         self.add_view(CharaSleMenu2())#Botを立ち上げなおしてもボタン類が機能するようになる
         self.add_view(CharaSleMenuC1())
@@ -142,11 +118,11 @@ async def on_member_update(before:discord.Member, after:discord.Member):
    
     #アルターエゴ死亡時　自動ロール開示
     if not added_roles.isdisjoint([ROLE_DIE]):
-        if gv.nick_to_data[after.nick].role.id == 1:
+        if gv.get_chara_data(after.nick).role == gv.CharaRole.ALTEREGO:
             await discord.utils.get(guild.channels,name="食堂").send(f"『{after.nick}』はアルターエゴでした")
     #クロ死亡時　自動ロール開示　ゲーム終了
     if not added_roles.isdisjoint([ROLE_DIE]):
-        if gv.nick_to_data[after.nick].role.id == 6:
+        if gv.get_chara_data(after.nick).role == gv.CharaRole.KURO:
             await discord.utils.get(guild.channels,name="食堂").send(f"『{after.nick}』はクロでした\n\n希望サイドの勝利です")
 
 #プレイヤー人数登録
@@ -155,7 +131,7 @@ class PlayerCountRegistration(discord.ui.View):
         super().__init__(timeout=None)
     @discord.ui.select(
         cls=discord.ui.Select,
-        placeholder="プレイイヤー数を選択",
+        placeholder="プレイヤー数を選択",
         options=[
             discord.SelectOption(label="4",value=4),
             discord.SelectOption(label="5",value=5),
@@ -174,7 +150,7 @@ class PlayerCountRegistration(discord.ui.View):
         custom_id="player_count_registration"
     )
     async def select(self,itx:discord.Interaction,select:discord.ui.Select):
-        gv.player=select.values[0]
+        gv.table_data.player=select.values[0]
         await itx.response.send_message(f"新入生は{select.values[0]}人だな\n"
                                     "（誤入力の場合は再度登録しなおしてください\n"
                                     "※生存者数ではないのでゲーム進行により死亡キャラクターが\n"
@@ -233,24 +209,7 @@ class CharaSleMenu1(discord.ui.View): # UIキットを利用するためにdisco
         custom_id="charasle1"
     )
     async def select(self, interaction: discord.Interaction, select: discord.ui.Select):
-        await interaction.user.add_roles(discord.utils.get(interaction.guild.roles, name=select.values[0]))
-    
-        gv.nick_to_data[select.values[0]].chara_ability=select.values[0]
-        await interaction.user.add_roles(discord.utils.get(interaction.guild.roles, name="生存"))
-        try:
-            await interaction.user.edit(nick=select.values[0])
-        except Exception as e:
-            print(e)
-        await interaction.response.send_message(
-            f"よくきたな{select.values[0]}\nさっさと"
-            f"{discord.utils.get(interaction.guild.channels,name=select.values[0]).mention}"
-            "に移動してロールを登録してくるんだな",
-            ephemeral=True
-            )
-        await discord.utils.get(interaction.guild.channels,name=select.values[0]).send(
-            "ロール、ノ登録ヲ、オ願イスルヨ",
-            view=RoleSleMenu()
-        )
+        await utils.on_chara_selected(interaction, select, bot)
 
 class CharaSleMenu2(discord.ui.View): # UIキットを利用するためにdiscord.ui.Viewを継承する
     def __init__(self): # Viewにはtimeoutがあり、初期値は180(s)である
@@ -287,23 +246,7 @@ class CharaSleMenu2(discord.ui.View): # UIキットを利用するためにdisco
         custom_id="charasle2"
     )
     async def select(self, interaction: discord.Interaction, select: discord.ui.Select):
-        await interaction.user.add_roles(discord.utils.get(interaction.guild.roles, name=select.values[0]))
-        gv.nick_to_data[select.values[0]].chara_ability=select.values[0]
-        await interaction.user.add_roles(discord.utils.get(interaction.guild.roles, name="生存"))
-        try:
-            await interaction.user.edit(nick=select.values[0])
-        except Exception as e:
-            print(e)
-        await interaction.response.send_message(
-            f"よくきたな{select.values[0]}\nさっさと"
-            f"{discord.utils.get(interaction.guild.channels,name=select.values[0]).mention}"
-            "に移動してロールを登録してくるんだな",
-            ephemeral=True
-            )
-        await discord.utils.get(interaction.guild.channels,name=select.values[0]).send(
-            "ロール、ノ登録ヲ、オ願イスルヨ",
-            view=RoleSleMenu()
-        )
+        await utils.on_chara_selected(interaction, select, bot)
 
 class CharaSleMenuC1(discord.ui.View): # UIキットを利用するためにdiscord.ui.Viewを継承する
     def __init__(self): # Viewにはtimeoutがあり、初期値は180(s)である
@@ -332,23 +275,7 @@ class CharaSleMenuC1(discord.ui.View): # UIキットを利用するためにdisc
         custom_id="charaslelessbare1"
     )
     async def select(self, interaction: discord.Interaction, select: discord.ui.Select):
-        await interaction.user.add_roles(discord.utils.get(interaction.guild.roles, name=select.values[0]))
-        gv.nick_to_data[select.values[0]].chara_ability=select.values[0]
-        await interaction.user.add_roles(discord.utils.get(interaction.guild.roles, name="生存"))
-        try:
-            await interaction.user.edit(nick=select.values[0])
-        except Exception as e:
-            print(e)
-        await interaction.response.send_message(
-            f"よくきたな{select.values[0]}\nさっさと"
-            f"{discord.utils.get(interaction.guild.channels,name=select.values[0]).mention}"
-            "に移動してロールを登録してくるんだな",
-            ephemeral=True
-            )
-        await discord.utils.get(interaction.guild.channels,name=select.values[0]).send(
-            "ロール、ノ登録ヲ、オ願イスルヨ",
-            view=RoleSleMenu()
-        )
+        await utils.on_chara_selected(interaction, select, bot)
 
 class CharaSleMenuC2(discord.ui.View): # UIキットを利用するためにdiscord.ui.Viewを継承する
     def __init__(self): # Viewにはtimeoutがあり、初期値は180(s)である
@@ -377,23 +304,7 @@ class CharaSleMenuC2(discord.ui.View): # UIキットを利用するためにdisc
         custom_id="chareslelessbare2"
     )
     async def select(self, interaction: discord.Interaction, select: discord.ui.Select):
-        await interaction.user.add_roles(discord.utils.get(interaction.guild.roles, name=select.values[0]))
-        gv.nick_to_data[select.values[0]].chara_ability=select.values[0]
-        await interaction.user.add_roles(discord.utils.get(interaction.guild.roles, name="生存"))
-        try:
-            await interaction.user.edit(nick=select.values[0])
-        except Exception as e:
-            print(e)
-        await interaction.response.send_message(
-            f"よくきたな{select.values[0]}\nさっさと"
-            f"{discord.utils.get(interaction.guild.channels,name=select.values[0]).mention}"
-            "に移動してロールを登録してくるんだな",
-            ephemeral=True
-            )
-        await discord.utils.get(interaction.guild.channels,name=select.values[0]).send(
-            "ロール、ノ登録ヲ、オ願イスルヨ",
-            view=RoleSleMenu()
-        )
+        await utils.on_chara_selected(interaction, select, bot)
 
 @bot.tree.command(name="monotaro",
                   description="キャラクターを選択し、Botに登録するメニューを出します",
@@ -410,101 +321,12 @@ async def chara_select(itx:discord.Interaction):
     await itx.followup.send(view=CharaSleMenu1())
     await itx.followup.send(view=CharaSleMenu2())
 
-# 役職ロールセレクトメニュー
-
-    #0日目夜時間（下見）開始ボタン
-class Night0(discord.ui.View):
-    def __init__(self):
-        super().__init__(timeout=None)
-    @discord.ui.button(
-        label="夜時間を開始する",
-        disabled=False,
-        style=discord.ButtonStyle.danger
-    )
-    async def start_night0(self,button:discord.ui.Button,interaction:discord.Interaction):
-        await interaction.response.defer()
-        #コマンド呼び出し
-        ctx = await bot.get_context(interaction.message)
-        ctx.command = bot.get_command("rehearsal")#ここでコマンドを指定
-        await bot.invoke(ctx)
-
-    #OKボタン（裏切者の開始時情報確認待ち）→0日目昼へ
-class OK_Button(discord.ui.View):
-    def __init__(self):
-        super().__init__(timeout=None)
-    @discord.ui.button(
-        label="OK",
-        disabled=False,
-        style=discord.ButtonStyle.success
-    )
-    async def ok(self,button:discord.ui.Button,interaction:discord.Interaction):
-        gv.ok_mati-=1
-        self.disabled=True
-        await interaction.response.send_message("確認しました、しばらくお待ちください")
-        if gv.ok_mati==0:
-            discord.utils.get(interaction.guild.channels,name="食堂").send(
-                "0日目の昼です、皆様、しばし御歓談ください\n"
-                "（キャラ能力説明等を行ってください\n"
-                "【夜時間を開始する】ボタンで夜時間が始まります）",
-                view=Night0()
-                )
-
-class RoleSleMenu(discord.ui.View):
-    def __init__(self):
-        super().__init__(timeout=None)
-
-    @discord.ui.select(
-        cls=discord.ui.Select,
-        placeholder="ロールカードに記載の役職を選択",
-        options=[
-            discord.SelectOption(label="シロ"),
-            discord.SelectOption(label="クロ"),
-            discord.SelectOption(label="アルターエゴ"),
-            discord.SelectOption(label="裏切者"),
-            discord.SelectOption(label="モノミ"),
-            discord.SelectOption(label="超高校級の絶望"),
-            discord.SelectOption(label="絶望病患者"),
-            discord.SelectOption(label="ザコケモノ"),
-            discord.SelectOption(label="未来機関"),
-            discord.SelectOption(label="絶望の残党"),       
-        ],
-        custom_id="role_sle_menu"
-    )
-    async def select(self, itx: discord.Interaction, select: discord.ui.Select):
-        #データの格納
-        gv.nick_to_data[itx.user.nick].role.name=select.values[0]
-        gv.nick_to_data[itx.user.nick].role.id=role_name_to_para[select.values[0]]
-        #登録済み人数のカウント
-        gv.role_registered += 1
-        #役職ごとのメンバーのリストに格納
-        memlis={"シロ":gv.Cast.siro,"クロ":gv.Cast.kuro,"アルターエゴ":gv.Cast.alterego,
-                "裏切者":gv.Cast.uragiri,"モノミ":gv.Cast.monomi,"超高校級の絶望":gv.Cast.tyozetsubo,
-                "絶望病患者":gv.Cast.zetsubobyo,"ザコケモノ":gv.Cast.zako,
-                "未来機関":gv.Cast.miraikikan,"絶望の残党":gv.Cast.zantou
-                }
-        memlis[select.values[0]].append(itx.user)
-       #プレイヤー（キャラ紐づけデータが機能しているか確認用、そのうち消す）
-        print(gv.nick_to_data[itx.user.nick])
-        #登録内容の確認メッセージ投稿
-        await itx.response.send_message("オマエハ、" + select.values[0] + " 了解シタ")
-        #全員の登録が終わったらクロと裏切者を各裏切者に通知
-        if gv.role_registered == gv.player:
-            uragiriyatura:str=""
-            for uragirimono in gv.Cast.uragiri:
-                uragiriyatura += uragirimono.nick+"\n"
-            for uragirimono in gv.Cast.uragiri:
-                gv.ok_mati+=1
-                await discord.utils.get(itx.guild.channels,name=uragirimono.nick).send(
-                    f"クロは『{gv.Cast.kuro[0].nick}』です\n\n{uragiriyatura}は裏切者です"
-                    "\n\nクロと裏切者が誰か読み終わったらOKを押して下さい",
-                    view=OK_Button()
-                )
 
 
 @bot.tree.command(name="monodam",description="役職登録メニューを出します",guild=Test_GUILD)
 @commands.is_owner()
 async def monodam(itx: discord.Interaction):
-    await itx.response.send_message("ロール、ノ登録ヲ、オ願イスルヨ",view=RoleSleMenu())
+    await itx.response.send_message("ロール、ノ登録ヲ、オ願イスルヨ",view=views.RoleSleMenu())
 
 # helloコマンド
 @bot.tree.command(name='hello', description='Say hello to the world!',guild=Test_GUILD) 
