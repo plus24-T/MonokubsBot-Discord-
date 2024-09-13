@@ -9,9 +9,9 @@ import views
 # キャラ選択後の共通処理
 async def on_chara_selected(interaction: discord.Interaction, select: discord.ui.Select, bot : commands.bot):
     user_nickname = select.values[0]
-    #await interaction.user.add_roles(discord.utils.get(interaction.guild.roles, name=user_nickname))
+    await interaction.user.add_roles(discord.utils.get(interaction.guild.roles, name=user_nickname))
     gv.get_chara_data(user_nickname).chara_ability=user_nickname
-    #await interaction.user.add_roles(discord.utils.get(interaction.guild.roles, name="生存"))
+    await interaction.user.add_roles(discord.utils.get(interaction.guild.roles, name="生存"))
     try:
         await interaction.user.edit(nick=user_nickname)
     except Exception as e:
