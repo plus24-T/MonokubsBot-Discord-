@@ -412,7 +412,23 @@ async def chara_select(itx:discord.Interaction):
 
 # 役職ロールセレクトメニュー
 
-#OKボタン
+    #0日目夜時間（下見）開始ボタン
+class Night0(discord.ui.View):
+    def __init__(self):
+        super().__init__(timeout=None)
+    @discord.ui.button(
+        label="夜時間を開始する",
+        disabled=False,
+        style=discord.ButtonStyle.danger
+    )
+    async def start_night0(self,button:discord.ui.Button,interaction:discord.Interaction):
+        await interaction.response.defer()
+        #コマンド呼び出し
+        ctx = await bot.get_context(interaction.message)
+        ctx.command = bot.get_command("rehearsal")#ここでコマンドを指定
+        await bot.invoke(ctx)
+
+    #OKボタン（裏切者の開始時情報確認待ち）→0日目昼へ
 class OK_Button(discord.ui.View):
     def __init__(self):
         super().__init__(timeout=None)
@@ -429,7 +445,8 @@ class OK_Button(discord.ui.View):
             discord.utils.get(interaction.guild.channels,name="食堂").send(
                 "0日目の昼です、皆様、しばし御歓談ください\n"
                 "（キャラ能力説明等を行ってください\n"
-                "【夜時間の開始】ボタンで夜時間が始まります）"
+                "【夜時間を開始する】ボタンで夜時間が始まります）",
+                view=Night0()
                 )
 
 class RoleSleMenu(discord.ui.View):
@@ -480,7 +497,7 @@ class RoleSleMenu(discord.ui.View):
                 await discord.utils.get(itx.guild.channels,name=uragirimono.nick).send(
                     f"クロは『{gv.Cast.kuro[0].nick}』です\n\n{uragiriyatura}は裏切者です"
                     "\n\nクロと裏切者が誰か読み終わったらOKを押して下さい",
-                    view=OK_Button
+                    view=OK_Button()
                 )
 
 
