@@ -412,6 +412,26 @@ async def chara_select(itx:discord.Interaction):
 
 # 役職ロールセレクトメニュー
 
+#OKボタン
+class OK_Button(discord.ui.View):
+    def __init__(self):
+        super().__init__(timeout=None)
+    @discord.ui.button(
+        label="OK",
+        disabled=False,
+        style=discord.ButtonStyle.success
+    )
+    async def ok(self,button:discord.ui.Button,interaction:discord.Interaction):
+        gv.ok_mati-=1
+        self.disabled=True
+        await interaction.response.send_message("確認しました、しばらくお待ちください")
+        if gv.ok_mati==0:
+            discord.utils.get(interaction.guild.channels,name="食堂").send(
+                "0日目の昼です、皆様、しばし御歓談ください\n"
+                "（キャラ能力説明等を行ってください\n"
+                "【夜時間の開始】ボタンで夜時間が始まります）"
+                )
+
 class RoleSleMenu(discord.ui.View):
     def __init__(self):
         super().__init__(timeout=None)
@@ -449,16 +469,20 @@ class RoleSleMenu(discord.ui.View):
        #プレイヤー（キャラ紐づけデータが機能しているか確認用、そのうち消す）
         print(gv.nick_to_data[itx.user.nick])
         #登録内容の確認メッセージ投稿
-        await itx.response.send_message("オマエニ、" + select.values[0] + " ノ、ロールヲ付与シマシタ", ephemeral=True)
+        await itx.response.send_message("オマエハ、" + select.values[0] + " 了解シタ")
         #全員の登録が終わったらクロと裏切者を各裏切者に通知
         if gv.role_registered == gv.player:
             uragiriyatura:str=""
             for uragirimono in gv.Cast.uragiri:
                 uragiriyatura += uragirimono.nick+"\n"
             for uragirimono in gv.Cast.uragiri:
+                gv.ok_mati+=1
                 await discord.utils.get(itx.guild.channels,name=uragirimono.nick).send(
                     f"クロは『{gv.Cast.kuro[0].nick}』です\n\n{uragiriyatura}は裏切者です"
+                    "\n\nクロと裏切者が誰か読み終わったらOKを押して下さい",
+                    view=OK_Button
                 )
+
 
 @bot.tree.command(name="monodam",description="役職登録メニューを出します",guild=Test_GUILD)
 @commands.is_owner()
