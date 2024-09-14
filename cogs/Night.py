@@ -115,7 +115,7 @@ class Night(commands.Cog):
         for member in living_members:
             select_op_living_members.append(discord.SelectOption(label=member.nick))
         #共通チャンネルに投稿
-        await itx.response.send_message(f"{gv.table_data.day}日目の夜になりました\n夜が明けるまでしばらくお待ちください")
+        await itx.response.send_message(f"{gv.table_data.day_count}日目の夜になりました\n夜が明けるまでしばらくお待ちください")
         #クロのプライベートチャンネルに投稿
         gv.prog.remaining_processes += 1 #後々アイテム効果で行なえない可能性があるのでちゃんと数えておく
         await discord.utils.get(itx.guild.channels,name=gv.chara_role_list.kuro[0].nick).send(
