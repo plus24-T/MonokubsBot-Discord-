@@ -150,3 +150,54 @@ class NightIdentificationItemsButton(discord.ui.View):
         ctx.command = self.bot.get_command('megane')
         await self.bot.invoke(ctx)
 
+
+#夜時間の護衛アイテム使用ボタン
+class NightEscortItemsButton(discord.ui.View):
+    def __init__(self, bot : commands.Bot):
+        super().__init__(timeout=None)
+        self.bot = bot
+
+    @discord.ui.button(
+        label="黄金銃"
+    )
+    async def golden_gun(self, button: discord.ui.Button, interaction: discord.Interaction):
+        gv.get_chara_data(interaction.user.nick).escorted=True
+        await interaction.response.send_message(f"{interaction.user.nick}が黄金銃を使用しました\n今夜{interaction.user.nick}への襲撃は無効になります")
+
+    @discord.ui.button(
+        label="ジャスティスロボ"
+    )
+    async def justice_robot(self, button: discord.ui.Button, interaction: discord.Interaction):
+        #生存メンバーのリストから選択候補のリストを作成
+        living_members = discord.utils.get(interaction.guild.roles,name="生存").members
+        select_op_living_members = []
+        for member in living_members:
+            select_op_living_members.append(discord.SelectOption(label=member.nick))
+        user_channel = discord.utils.get(interaction.guild.channels,name=interaction.user.nick)
+        await interaction.response.send_message(
+            f"{user_channel.mention}に移動して護衛対象を選択してください"
+        )
+        user_channel.send(
+            "ジャスティスロボの護衛対象を選択してください",
+            view=JusticeRobot_View(options=select_op_living_members))
+        
+class JusticeRobot_Select(discord.ui.Select):
+    def __init__(self,options:list[discord.SelectOption]):
+        super().__init__(
+            placeholder="対象を選択",
+            options=options,
+            disabled=False
+            )
+    async def callback(self, interaction: discord.Interaction):
+        target_name = self.values[0]
+        gv.get_chara_data(target_name).escorted = True
+        await interaction.response.send_message(f"{target_name}を護衛対象に選択しました")
+        discord.utils.get(interaction.guild.channels,name="食堂").send(
+            f"{target_name}が護衛対象に選択されました"
+        )
+  
+class JusticeRobot_View(discord.ui.View):
+    def __init__(self, bot : commands.Bot, options:list[discord.SelectOption]):
+        super().__init__(timeout=None)
+        self.bot = bot
+        self.add_item(JusticeRobot_Select(options=options))
