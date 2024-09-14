@@ -80,7 +80,7 @@ class Night0(discord.ui.View):
         style=discord.ButtonStyle.danger
     )
     async def start_night0(self,button:discord.ui.Button,interaction:discord.Interaction):
-        await interaction.response.defer()
+        await interaction.response.send_message("")#インタラクションに失敗しました（赤い字）の表示を阻止
         #コマンド呼び出し
         ctx = await self.bot.get_context(interaction.message)
         ctx.command = self.bot.get_command("rehearsal")#ここでコマンドを指定
@@ -109,3 +109,44 @@ class OK_Button(discord.ui.View):
                 "【夜時間を開始する】ボタンで夜時間が始まります）",
                 view=Night0(self.bot)
                 )
+
+
+#夜時間の判別アイテム使用ボタン
+class NightIdentificationItemsButton(discord.ui.View):
+    def __init__(self, bot : commands.Bot):
+        super().__init__(timeout=None)
+        self.bot = bot
+
+    @discord.ui.button(
+        label="無言電話"
+    )
+    async def use_silent_phone(self, button: discord.ui.Button, interaction: discord.Interaction):
+        await interaction.response.send_message("")#インタラクションに失敗しました（赤い字）の表示を阻止
+        # ボタンを押したメンバーのコンテキストを作成
+        ctx = await self.bot.get_context(interaction.message)
+        ctx.author = interaction.user
+        ctx.command = self.bot.get_command('silent_phone')
+        await self.bot.invoke(ctx)
+
+    @discord.ui.button(
+        label="誰かの卒業アルバム"
+    )
+    async def use_silent_phone(self, button: discord.ui.Button, interaction: discord.Interaction):
+        await interaction.response.send_message("")#インタラクションに失敗しました（赤い字）の表示を阻止
+        # ボタンを押したメンバーのコンテキストを作成
+        ctx = await self.bot.get_context(interaction.message)
+        ctx.author = interaction.user
+        ctx.command = self.bot.get_command('album')
+        await self.bot.invoke(ctx)
+
+    @discord.ui.button(
+        label="おでこのメガネ"
+    )
+    async def use_silent_phone(self, button: discord.ui.Button, interaction: discord.Interaction):
+        await interaction.response.send_message("")#インタラクションに失敗しました（赤い字）の表示を阻止
+        # ボタンを押したメンバーのコンテキストを作成
+        ctx = await self.bot.get_context(interaction.message)
+        ctx.author = interaction.user
+        ctx.command = self.bot.get_command('megane')
+        await self.bot.invoke(ctx)
+
