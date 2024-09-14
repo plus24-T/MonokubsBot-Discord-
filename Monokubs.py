@@ -150,7 +150,7 @@ class PlayerCountRegistration(discord.ui.View):
         custom_id="player_count_registration"
     )
     async def select(self,itx:discord.Interaction,select:discord.ui.Select):
-        gv.table_data.player=select.values[0]
+        gv.table_data.player_count=select.values[0]
         await itx.response.send_message(f"新入生は{select.values[0]}人だな\n"
                                     "（誤入力の場合は再度登録しなおしてください\n"
                                     "※生存者数ではないのでゲーム進行により死亡キャラクターが\n"
