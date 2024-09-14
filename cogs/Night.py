@@ -65,7 +65,7 @@ class Night_Select(discord.ui.Select):#1人選んでそれぞれの能力の対�
                     absence:bool=False
                     exploded:bool=False
             #朝時間開始メッセージ
-            gv.table_data.day+=1
+            gv.table_data.day_count+=1
             await discord.utils.get(itx.guild.channels,name="食堂").send(f"オハヨウゴザイマス\n{gv.table_data.day}日目の朝時間になりました")
             #残党占死メッセージおよび死亡ロール付与
             if cursed_killing:
@@ -86,7 +86,7 @@ class Night_Select(discord.ui.Select):#1人選んでそれぞれの能力の対�
                     if exploded:
                         await discord.utils.get(itx.guild.channels,name="食堂").send(f"が！\n{gv.chara_role_list.monomi[0].nick}がモノミと共に身を挺して守ったため\n{osoware_yatsu}は助かりました\nしかし{gv.chara_role_list.monomi[0].nick}はモノミと共に爆死してしまったようです")
                         gv.chara_role_list.monomi[0].remove_roles(discord.utils.get(itx.guild.roles,name="生存"))
-                        gv.table_data.kill+=1
+                        gv.table_data.kill_count+=1
                         gv.chara_role_list.monomi[0].add_roles(discord.utils.get(itx.guild.roles,name="死亡"))
             #襲撃無効効果リセット
             for member in discord.utils.get(itx.guild.roles,name="生存").members:

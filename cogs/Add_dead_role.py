@@ -20,7 +20,7 @@ class Add_dead_role(commands.Cog):#Cog名、任意だが分かりやすさのた
             )
     async def add_dead_role(self, itx:discord.Interaction,死因:Literal["襲撃","おしおき"],死者:discord.Member):#ここが処理内容、必要な引数とか設定する
         if 死因=="襲撃":
-            gv.table_data.kill+=1
+            gv.table_data.kill_count+=1
             await itx.response.send_message(f"襲撃により{死者.nick}は死亡しました")
             死者.remove_roles(discord.utils.get(itx.guild.roles,name="生存"))
             死者.add_roles(discord.utils.get(itx.guild.roles,name="死亡"))
