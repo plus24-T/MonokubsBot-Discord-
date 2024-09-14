@@ -48,16 +48,24 @@ class RoleSleMenu(discord.ui.View):
         await itx.response.send_message("オマエハ、" + select.values[0] + " 了解シタ")
         #全員の登録が終わったらクロと裏切者を各裏切者に通知
         if gv.prog.role_registered == gv.table_data.player_count:
-            uragiriyatura:str=""
-            for uragirimono in gv.chara_role_list.uragiri:
-                uragiriyatura += uragirimono.nick+"\n"
-            for uragirimono in gv.chara_role_list.uragiri:
-                gv.prog.ok_mati+=1
-                await discord.utils.get(itx.guild.channels,name=uragirimono.nick).send(
-                    f"クロは『{gv.chara_role_list.kuro[0].nick}』です\n\n{uragiriyatura}は裏切者です"
-                    "\n\nクロと裏切者が誰か読み終わったらOKを押して下さい",
-                    view=OK_Button(self.bot)
-                )
+            if len(gv.chara_role_list.uragiri)==0:#裏切者欠け（居ない）時の処理
+                discord.utils.get(itx.guild.channels,name="食堂").send(
+                    "0日目の昼です、皆様、しばし御歓談ください\n"
+                    "（キャラ能力説明等を行ってください\n"
+                    "【夜時間を開始する】ボタンで夜時間が始まります）",
+                    view=Night0(self.bot)
+                    )
+            else:
+                uragiriyatura:str=""
+                for uragirimono in gv.chara_role_list.uragiri:
+                    uragiriyatura += uragirimono.nick+"\n"
+                for uragirimono in gv.chara_role_list.uragiri:
+                    gv.prog.ok_mati+=1
+                    await discord.utils.get(itx.guild.channels,name=uragirimono.nick).send(
+                        f"クロは『{gv.chara_role_list.kuro[0].nick}』です\n\n{uragiriyatura}は裏切者です"
+                        "\n\nクロと裏切者が誰か読み終わったらOKを押して下さい",
+                        view=OK_Button(self.bot)
+                        )
 
 
 #0日目夜時間（下見）開始ボタン
