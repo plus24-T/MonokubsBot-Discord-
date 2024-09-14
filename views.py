@@ -47,7 +47,7 @@ class RoleSleMenu(discord.ui.View):
         #登録内容の確認メッセージ投稿
         await itx.response.send_message("オマエハ、" + select.values[0] + " 了解シタ")
         #全員の登録が終わったらクロと裏切者を各裏切者に通知
-        if gv.prog.role_registered == gv.table_data.player:
+        if gv.prog.role_registered == gv.table_data.player_count:
             uragiriyatura:str=""
             for uragirimono in gv.chara_role_list.uragiri:
                 uragiriyatura += uragirimono.nick+"\n"
