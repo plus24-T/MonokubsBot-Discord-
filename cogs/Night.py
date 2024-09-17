@@ -66,7 +66,7 @@ class Night_Select(discord.ui.Select):#1人選んでそれぞれの能力の対�
                     exploded:bool=False
             #朝時間開始メッセージ
             gv.table_data.day_count+=1
-            await discord.utils.get(itx.guild.channels,name="食堂").send(f"オハヨウゴザイマス\n{gv.table_data.day}日目の朝時間になりました")
+            await discord.utils.get(itx.guild.channels,name="食堂").send(f"オハヨウゴザイマス\n{gv.table_data.day_count}日目の朝時間になりました")
             #残党占死メッセージおよび死亡ロール付与
             if cursed_killing:
                 await discord.utils.get(itx.guild.channels,name="食堂").send(f"{altered_yatsu}の姿が見当たりませんね\n（アルターエゴの判別対象が絶望の残党だったため死亡しました）")
@@ -115,7 +115,7 @@ class Night(commands.Cog):
         for member in living_members:
             select_op_living_members.append(discord.SelectOption(label=member.nick))
         #共通チャンネルに投稿
-        await itx.response.send_message(f"{gv.table_data.day_count}日目の夜になりました\n夜が明けるまでしばらくお待ちください")
+        await itx.response.send_message("消灯時間になりました、おやすみなさい\n夜が明けるまでしばらくお待ちください")
         #クロのプライベートチャンネルに投稿
         gv.prog.remaining_processes += 1 #後々アイテム効果で行なえない可能性があるのでちゃんと数えておく
         await discord.utils.get(itx.guild.channels,name=gv.chara_role_list.kuro[0].nick).send(
