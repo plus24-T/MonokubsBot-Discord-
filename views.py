@@ -68,25 +68,6 @@ class RoleSleMenu(discord.ui.View):
                         )
 
 
-#0日目夜時間（下見）開始ボタン
-class Night0(discord.ui.View):
-    def __init__(self, bot : commands.Bot):
-        super().__init__(timeout=None)
-        self.bot = bot
-
-    @discord.ui.button(
-        label="夜時間を開始する",
-        disabled=False,
-        style=discord.ButtonStyle.danger
-    )
-    async def start_night0(self,button:discord.ui.Button,interaction:discord.Interaction):
-        await interaction.response.send_message("")#インタラクションに失敗しました（赤い字）の表示を阻止
-        #コマンド呼び出し
-        ctx = await self.bot.get_context(interaction.message)
-        ctx.command = self.bot.get_command("rehearsal")#ここでコマンドを指定
-        await self.bot.invoke(ctx)
-
-
 #OKボタン（裏切者の開始時情報確認待ち）→0日目昼へ
 class OK_Button(discord.ui.View):
     def __init__(self, bot : commands.Bot):
@@ -110,6 +91,51 @@ class OK_Button(discord.ui.View):
                 view=Night0(self.bot)
                 )
             
+#0日目夜時間（下見）開始ボタン
+class Night0(discord.ui.View):
+    def __init__(self, bot : commands.Bot):
+        super().__init__(timeout=None)
+        self.bot = bot
+
+    @discord.ui.button(
+        label="夜時間を開始する",
+        disabled=False,
+        style=discord.ButtonStyle.danger
+    )
+    async def start_night0(self,button:discord.ui.Button,interaction:discord.Interaction):
+        await interaction.response.send_message("")#インタラクションに失敗しました（赤い字）の表示を阻止
+        #コマンド呼び出し
+        ctx = await self.bot.get_context(interaction.message)
+        ctx.command = self.bot.get_command("rehearsal")#ここでコマンドを指定
+        await self.bot.invoke(ctx)
+
+
+
+#下見処理（アイテム一枚捨てる）終了確認ボタン
+class RehearsalEndConfirmationButton(discord.ui.View):
+    def __init__(self, bot : commands.Bot):
+        super().__init__(timeout=None)
+        self.bot = bot
+
+    @discord.ui.button(
+        label="捨てました",
+        disabled=False,
+        style=discord.ButtonStyle.grey
+    )
+    async def item_discarded(self,button:discord.ui.Button,interaction:discord.Interaction):
+        button.style = discord.ButtonStyle.success
+        button.disabled=True
+        await interaction.response.send_message("確認しました、"
+                f"{discord.utils.get(interaction.guild.channels,name="食堂").mention}"
+                "へお戻りください"    
+                )
+        discord.utils.get(interaction.guild.channels,name="食堂").send(
+                "1日目の昼です、昼時間アイテムや能力の使用を確認したあと\n"
+                "ブリーフィングタイム（3分間）を行ってください\n"
+                "【夜時間を開始する】ボタンで夜時間が始まります）",
+                view=NightStartButton(self.bot)
+                )
+
 
 #夜時間の判別キャラクター能力使用ボタン
 class NightIdentificationAbilitiesButton(discord.ui.View):
