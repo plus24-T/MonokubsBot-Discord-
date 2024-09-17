@@ -109,6 +109,35 @@ class OK_Button(discord.ui.View):
                 "【夜時間を開始する】ボタンで夜時間が始まります）",
                 view=Night0(self.bot)
                 )
+            
+
+#夜時間の判別キャラクター能力使用ボタン
+class NightIdentificationAbilitiesButton(discord.ui.View):
+    def __init__(self, bot : commands.Bot):
+        super().__init__(timeout=None)
+        self.bot = bot
+
+    @discord.ui.button(
+        label="霧切響子"
+    )
+    async def use_kirigiri_ability(self, button: discord.ui.Button, interaction: discord.Interaction):
+        await interaction.response.send_message("")#インタラクションに失敗しました（赤い字）の表示を阻止
+        # ボタンを押したメンバーのコンテキストを作成
+        ctx = await self.bot.get_context(interaction.message)
+        ctx.author = interaction.user
+        ctx.command = self.bot.get_command('kirigiri')
+        await self.bot.invoke(ctx)
+
+    @discord.ui.button(
+        label="葉隠康比呂"
+    )
+    async def use_hagakure_ability(self, button: discord.ui.Button, interaction: discord.Interaction):
+        await interaction.response.send_message("")#インタラクションに失敗しました（赤い字）の表示を阻止
+        # ボタンを押したメンバーのコンテキストを作成
+        ctx = await self.bot.get_context(interaction.message)
+        ctx.author = interaction.user
+        ctx.command = self.bot.get_command('hagakure')
+        await self.bot.invoke(ctx)
 
 
 #夜時間の判別アイテム使用ボタン
