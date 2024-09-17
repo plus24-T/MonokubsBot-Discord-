@@ -23,7 +23,7 @@ class Rehearsal_Select(discord.ui.Select):
         await discord.utils.get(itx.guild.channels,name=self.values[0]).send(
             "あなたの部屋が荒らされました、手持ちのアイテムを1枚選択して裏向きのまま捨てて下さい"
             )
-        await discord.utils.get(itx.guild.channels,name="食堂").send(f"オハヨウゴザイマス\n{gv.table_data.day}日目の朝時間になりました")
+        await discord.utils.get(itx.guild.channels,name="食堂").send(f"オハヨウゴザイマス\n{gv.table_data.day_count}日目の朝時間になりました")
         await discord.utils.get(itx.guild.channels,name="食堂").send(f"{self.values[0]}の部屋が荒らされました")
         self.disabled=True
 
