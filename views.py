@@ -130,11 +130,43 @@ class RehearsalEndConfirmationButton(discord.ui.View):
                 "へお戻りください"    
                 )
         discord.utils.get(interaction.guild.channels,name="食堂").send(
-                "1日目の昼です、昼時間アイテムや能力の使用を確認したあと\n"
+                "1日目の昼時間が始まりました、昼時間のアイテムや能力使用を全て確認したあと\n"
                 "ブリーフィングタイム（3分間）を行ってください\n"
                 "【夜時間を開始する】ボタンで夜時間が始まります）",
                 view=NightStartButton(self.bot)
                 )
+        
+
+ #夜時間開始ボタン
+class NightStartButton(discord.ui.View):
+    def __init__(self, bot : commands.Bot):
+        super().__init__(timeout=None)
+        self.bot = bot
+
+    @discord.ui.button(
+        label="夜時間を開始する",
+        disabled=False,
+        style=discord.ButtonStyle.grey
+    )
+    async def night_start(self,button:discord.ui.Button,interaction:discord.Interaction):
+        button.style = discord.ButtonStyle.success
+        button.disabled=True
+        await interaction.response.send_message(
+            f"{gv.table_data.day_count}日目の夜時間が始まりました、"
+            "夜時間のアイテムや能力使用をすべて確認したあと"            
+            "【おやすみなさい】ボタンを押してください"
+            "(クロの襲撃、アルターエゴの判別、モノミの護衛の対象の指定ののち、朝時間が始まります)",
+            view=GoodNightButton(self.bot)
+            )
+        await interaction.followup.send(
+            "判別能力を使用するときはこのボタンを押してください",
+            view=NightIdentificationAbilitiesButton(self.bot)
+        )
+        await interaction.followup.send(
+            "判別系アイテムを使用するときはこのボタンを押してください",
+            view=NightIdentificationItemsButton(self.bot)
+        )
+
 
 
 #夜時間の判別キャラクター能力使用ボタン
