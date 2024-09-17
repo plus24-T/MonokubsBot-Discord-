@@ -168,6 +168,25 @@ class NightStartButton(discord.ui.View):
         )
 
 
+#夜時間の役職能力処理開始ボタン（おやすみなさいボタン）
+class GoodNightButton(discord.ui.View):
+    def __init__(self, bot : commands.Bot):
+        super().__init__(timeout=None)
+        self.bot = bot
+
+    @discord.ui.button(
+        label="おやすみなさい",
+        disabled=False,
+        style=discord.ButtonStyle.danger
+    )
+    async def night_start(self,button:discord.ui.Button,interaction:discord.Interaction):
+        button.style = discord.ButtonStyle.gray
+        button.disabled=True
+        await interaction.response.send_message("")#赤文字回避
+        ctx = await self.bot.get_context(interaction.message)
+        ctx.command = self.bot.get_command('night')
+        await self.bot.invoke(ctx)
+
 
 #夜時間の判別キャラクター能力使用ボタン
 class NightIdentificationAbilitiesButton(discord.ui.View):
