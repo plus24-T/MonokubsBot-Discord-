@@ -316,3 +316,58 @@ class JusticeRobot_View(discord.ui.View):
         super().__init__(timeout=None)
         self.bot = bot
         self.add_item(JusticeRobot_Select(options=options))
+
+
+#襲撃による死亡の登録ボタン
+class IAmKilledButton(discord.ui.View):
+    def __init__(self, bot : commands.Bot):
+        super().__init__(timeout=None)
+        self.bot=bot
+    @discord.ui.button(
+        label="殺られた～",
+        style=discord.ButtonStyle.danger,
+        disabled=False
+    )
+    async def i_am_killed(self,button:discord.ui.Button,interaction:discord.Interaction):
+        button.style=discord.ButtonStyle.success
+        button.disabled=True
+        chara_name=interaction.user.nick
+        gv.table_data.kill_count+=1
+        await interaction.response.send_message(
+            f"{chara_name}は死亡しました"
+        )
+        await interaction.user.remove_roles(discord.utils.get(interaction.guild.roles,name="生存"))
+        await interaction.user.add_roles(discord.utils.get(interaction.guild.roles,name="死亡"))
+        await interaction.followup.send(
+            "罪木蜜柑の能力を使用する場合は\n罪木蜜柑がこのボタンを押してください",
+            view=TsumikiAbilityButton(target=interaction.user)
+        )
+
+
+#罪木蜜柑の能力使用ボタン
+class TsumikiAbilityButton(discord.ui.View):
+    def __init__(self):
+        super().__init__(timeout=None)
+    @discord.ui.button(
+        label="罪木蜜柑の能力を使用",
+        style=discord.ButtonStyle.gray,
+        disabled=False
+    )
+    async def use_tsumiki_ability(self,button:discord.ui.Button,interaction:discord.Interaction,target:discord.Member):
+        if interaction.user.nick != "罪木蜜柑":
+            await interaction.response.send_message("あなたは罪木蜜柑ではありません",ephemeral=True)
+        else:
+            button.style=discord.ButtonStyle.success
+            button.disabled=True
+            await interaction.response.send_message(
+                "罪木蜜柑の能力を使用しました、"
+                f"罪木蜜柑は{target.nick}の役職を確認できます"
+                )
+            await discord.utils.get(interaction.guild.channels,name="罪木蜜柑").send(
+                f"{target.nick}は{gv.get_chara_data(target.nick).role.to_japanese_name}です"
+            )
+            await interaction.followup.send(
+                f"{discord.utils.get(interaction.guild.channels,name="罪木蜜柑").mention}で判別結果を確認してください",
+                ephemeral=True
+            )
+        
