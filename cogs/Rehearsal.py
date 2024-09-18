@@ -18,7 +18,10 @@ class Rehearsal_Select(discord.ui.Select):
             disabled=False
             )
     async def callback(self, itx: discord.Interaction):
-        await itx.response.send_message(f"『{self.values[0]}』の部屋を荒らしました")
+        await itx.response.send_message(
+            f"『{self.values[0]}』の部屋を荒らしました\n"
+            f"{discord.utils.get(itx.guild.channels,name="食堂").mention}へお戻りください"
+            )
         gv.table_data.day_count+=1
         await discord.utils.get(itx.guild.channels,name=self.values[0]).send(
             "あなたの部屋が荒らされました、手持ちのアイテムを1枚選択して裏向きのまま捨てて下さい"
@@ -46,7 +49,10 @@ class Rehearsal(commands.Cog):#コマンド名、頭大文字でクラス作成
         select_op_living_members = []    #生存メンバーのリストから選択候補のリストを作成
         for member in living_members:
             select_op_living_members.append(discord.SelectOption(label=member.nick))
-        await itx.response.send_message("クロが下見の対象を選択しています")
+        await itx.response.send_message(
+            "クロが下見の対象を選択しています\n"
+            "（クロは自身の個室へ移動して対象を選択してください）"
+            )
         await discord.utils.get(itx.guild.channels,name=gv.chara_role_list.kuro[0].nick).send(
             "下見の対象を選択してください",
             view=Rehearsal_View(options=select_op_living_members)
