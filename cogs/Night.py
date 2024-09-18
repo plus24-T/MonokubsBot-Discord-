@@ -9,10 +9,12 @@ from typing import List
 
 import gv
 import utils
+import views
 
 #対象のセレクトメニュー及び朝時間開始時の処理
 class Night_Select(discord.ui.Select):#1人選んでそれぞれの能力の対象にするため使用者で分岐させる
-    def __init__(self,options:list[discord.SelectOption]):
+    def __init__(self,options:list[discord.SelectOption],bot:commands.Bot):
+        self.bot = bot
         super().__init__(
             placeholder="対象を選択",
             options=options,
@@ -89,7 +91,11 @@ class Night_Select(discord.ui.Select):#1人選んでそれぞれの能力の対�
                 await discord.utils.get(itx.guild.channels,name="食堂").send("昨夜襲撃されたひとはいなかったようです\n（絶望の残党が襲撃先でした）")
             else:
                 #襲撃先発表メッセージ
-                await discord.utils.get(itx.guild.channels,name="食堂").send(f"{osoware_yatsu}が襲撃されました")
+                await discord.utils.get(itx.guild.channels,name="食堂").send(
+                    f"{osoware_yatsu}が襲撃されました\n"
+                    "自力救済→他力救済→両隣からのアイテム譲渡の順に最後の抵抗を試みてください\n"
+                    "襲撃によって死亡した人は【殺られた～】ボタンを押してください",
+                    view=views.IAmKilledButton(self.bot))
                 #襲撃無効メッセージ
                 if gv.get_chara_data(osoware_yatsu).escorted:
                     await discord.utils.get(itx.guild.channels,name="食堂").send(f"しかし{osoware_yatsu}には襲撃無効が付与されていたため\n襲撃は無効になりました")
@@ -106,10 +112,10 @@ class Night_Select(discord.ui.Select):#1人選んでそれぞれの能力の対�
 
 #選択対象渡しView       
 class Night_View(discord.ui.View):
-    def __init__(self,options:list[discord.SelectOption]):
-        super().__init__(timeout=180)
+    def __init__(self,options:list[discord.SelectOption],bot:commands.Bot):
+        super().__init__(timeout=None)
 
-        self.add_item(Night_Select(options=options))
+        self.add_item(Night_Select(options=options,bot=bot))
 
 #このコグのクラス化
 class Night(commands.Cog):
@@ -132,14 +138,14 @@ class Night(commands.Cog):
         gv.prog.remaining_processes += 1 #後々アイテム効果で行なえない可能性があるのでちゃんと数えておく
         await discord.utils.get(itx.guild.channels,name=gv.chara_role_list.kuro[0].nick).send(
             "襲撃の対象を選択してください",
-            view=Night_View(options=select_op_living_members)
+            view=Night_View(options=select_op_living_members,bot=self.bot)
             )
         #アルターエゴ(が生存しているなら)のプライベートチャンネルに投稿
         if gv.chara_role_list.alterego[0] in living_members:
                 gv.prog.remaining_processes += 1
                 await discord.utils.get(itx.guild.channels,name=gv.chara_role_list.alterego[0].nick).send(
                     "判別の対象を選択してください",
-                    view=Night_View(options=select_op_living_members)
+                    view=Night_View(options=select_op_living_members,bot=self.bot)
                     )
         #モノミ（が居て生存しているなら）のプライベートチャンネルに投稿
         if len(gv.chara_role_list.monomi)==1:
@@ -147,7 +153,7 @@ class Night(commands.Cog):
                 gv.prog.remaining_processes += 1
                 await discord.utils.get(itx.guild.channels,name=gv.chara_role_list.monomi[0].nick).send(
                     "護衛の対象を選択してください",
-                    view=Night_View(options=select_op_living_members)
+                    view=Night_View(options=select_op_living_members,bot=self.bot)
                     )
                 
 #エクステンションロード時のセットアップ
