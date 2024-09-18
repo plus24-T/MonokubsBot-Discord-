@@ -46,6 +46,12 @@ class RoleSleMenu(discord.ui.View):
         print(gv.get_chara_data(userNickName))
         #登録内容の確認メッセージ投稿
         await itx.response.send_message("オマエハ、" + select.values[0] + " ダナ、了解シタ")
+        #裏切者以外を食堂（共通チャンネル）へ誘導
+        if gv.get_chara_data(userNickName).role != gv.CharaRole.URAGIRI:
+            await itx.followup.send(
+                f"{discord.utils.get(itx.guild.channels,name="食堂").mention}"
+                "へ移動して、しばらくお待ちください。"
+                )
         #全員の登録が終わったらクロと裏切者を各裏切者に通知
         if gv.prog.role_registered == gv.table_data.player_count:
             if len(gv.chara_role_list.uragiri)==0:#裏切者欠け（居ない）時の処理
