@@ -8,7 +8,7 @@ import discord.context_managers
 from typing import List
 
 import gv
-
+import views
 
 class Rehearsal_Select(discord.ui.Select):
     def __init__(self,options:list[discord.SelectOption]):
@@ -24,10 +24,16 @@ class Rehearsal_Select(discord.ui.Select):
             )
         gv.table_data.day_count+=1
         await discord.utils.get(itx.guild.channels,name=self.values[0]).send(
-            "あなたの部屋が荒らされました、手持ちのアイテムを1枚選択して裏向きのまま捨てて下さい"
+            "あなたの部屋が荒らされました、手持ちのアイテムを1枚選択して裏向きのまま捨てて下さい\n"
+            "捨て終わったら【捨てました】ボタンを押してください",
+            view=views.RehearsalEndConfirmationButton
             )
-        await discord.utils.get(itx.guild.channels,name="食堂").send(f"オハヨウゴザイマス\n{gv.table_data.day_count}日目の朝時間になりました")
-        await discord.utils.get(itx.guild.channels,name="食堂").send(f"{self.values[0]}の部屋が荒らされました")
+        await discord.utils.get(itx.guild.channels,name="食堂").send(
+            f"オハヨウゴザイマス\n{gv.table_data.day_count}日目の朝時間になりました"
+            )
+        await discord.utils.get(itx.guild.channels,name="食堂").send(
+            f"{self.values[0]}の部屋が荒らされました\n"
+            "処理が終わるまでしばらくお待ちください")
         self.disabled=True
 
 class Rehearsal_View(discord.ui.View):
