@@ -22,12 +22,12 @@ class Add_dead_role(commands.Cog):#Cog名、任意だが分かりやすさのた
         if 死因=="襲撃":
             gv.table_data.kill_count+=1
             await itx.response.send_message(f"襲撃により{死者.nick}は死亡しました")
-            死者.remove_roles(discord.utils.get(itx.guild.roles,name="生存"))
-            死者.add_roles(discord.utils.get(itx.guild.roles,name="死亡"))
+            await 死者.remove_roles(discord.utils.get(itx.guild.roles,name="生存"))
+            await 死者.add_roles(discord.utils.get(itx.guild.roles,name="死亡"))
         else:
             await itx.response.send_message(f"{死者.nick}はおしおきされました")
-            死者.remove_roles(discord.utils.get(itx.guild.roles,name="生存"))
-            死者.add_roles(discord.utils.get(itx.guild.roles,name="死亡"))
+            await 死者.remove_roles(discord.utils.get(itx.guild.roles,name="生存"))
+            await 死者.add_roles(discord.utils.get(itx.guild.roles,name="死亡"))
             if gv.get_chara_data(死者.nick).role == gv.CharaRole.TYOZETSUBO:
                 await itx.followup.send(f"{死者.nick}は超高校級の絶望でした\n\n{死者.nick}の勝利です")
 
