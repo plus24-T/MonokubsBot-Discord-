@@ -11,7 +11,8 @@ import gv
 import views
 
 class Rehearsal_Select(discord.ui.Select):
-    def __init__(self,options:list[discord.SelectOption]):
+    def __init__(self,options:list[discord.SelectOption],bot:commands.Bot):
+        self.bot = bot
         super().__init__(
             placeholder="対象を選択",
             options=options,
@@ -26,7 +27,7 @@ class Rehearsal_Select(discord.ui.Select):
         await discord.utils.get(itx.guild.channels,name=self.values[0]).send(
             "あなたの部屋が荒らされました、手持ちのアイテムを1枚選択して裏向きのまま捨てて下さい\n"
             "捨て終わったら【捨てました】ボタンを押してください",
-            view=views.RehearsalEndConfirmationButton
+            view=views.RehearsalEndConfirmationButton(self.bot)
             )
         await discord.utils.get(itx.guild.channels,name="食堂").send(
             f"オハヨウゴザイマス\n{gv.table_data.day_count}日目の朝時間になりました"
@@ -37,10 +38,10 @@ class Rehearsal_Select(discord.ui.Select):
         self.disabled=True
 
 class Rehearsal_View(discord.ui.View):
-    def __init__(self,options:list[discord.SelectOption]):
+    def __init__(self,options:list[discord.SelectOption],bot:commands.Bot):
         super().__init__(timeout=180)
 
-        self.add_item(Rehearsal_Select(options=options))
+        self.add_item(Rehearsal_Select(options=options,bot=bot))
 
 class Rehearsal(commands.Cog):#コマンド名、頭大文字でクラス作成
     def __init__(self, bot:commands.Bot):
@@ -61,7 +62,7 @@ class Rehearsal(commands.Cog):#コマンド名、頭大文字でクラス作成
             )
         await discord.utils.get(itx.guild.channels,name=gv.chara_role_list.kuro[0].nick).send(
             "下見の対象を選択してください",
-            view=Rehearsal_View(options=select_op_living_members)
+            view=Rehearsal_View(options=select_op_living_members,bot=self.bot)
             )
 
 async def setup(bot:commands.Bot):
