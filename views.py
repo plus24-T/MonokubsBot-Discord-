@@ -45,7 +45,7 @@ class RoleSleMenu(discord.ui.View):
        #プレイヤー（キャラ紐づけデータが機能しているか確認用、そのうち消す）
         print(gv.get_chara_data(userNickName))
         #登録内容の確認メッセージ投稿
-        await itx.response.send_message("オマエハ、" + select.values[0] + " 了解シタ")
+        await itx.response.send_message("オマエハ、" + select.values[0] + " ダナ、了解シタ")
         #全員の登録が終わったらクロと裏切者を各裏切者に通知
         if gv.prog.role_registered == gv.table_data.player_count:
             if len(gv.chara_role_list.uragiri)==0:#裏切者欠け（居ない）時の処理
@@ -82,7 +82,10 @@ class OK_Button(discord.ui.View):
     async def ok(self,button:discord.ui.Button,interaction:discord.Interaction):
         gv.prog.ok_mati-=1
         self.disabled=True
-        await interaction.response.send_message("確認しました、しばらくお待ちください")
+        await interaction.response.send_message(
+            "確認しました、"
+            f"{discord.utils.get(interaction.guild.channels,name="食堂").mention}"
+            "へ移動し、しばらくお待ちください")
         if gv.prog.ok_mati==0:
             discord.utils.get(interaction.guild.channels,name="食堂").send(
                 "0日目の昼です、皆様、しばし御歓談ください\n"
