@@ -168,7 +168,7 @@ class NightStartButton(discord.ui.View):
             view=GoodNightButton(self.bot)
             )
         await interaction.followup.send(
-            "判別能力を使用するときはこのボタンを押してください",
+            "判別系能力を使用するときはこのボタンを押してください",
             view=NightIdentificationAbilitiesButton(self.bot)
         )
         await interaction.followup.send(
