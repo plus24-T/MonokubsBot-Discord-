@@ -26,12 +26,18 @@ class Night_Select(discord.ui.Select):#1人選んでそれぞれの能力の対�
         if user_role == gv.CharaRole.KURO:
             gv.prog.remaining_processes -= 1
             osoware_yatsu=self.values[0]
-            await itx.response.send_message(f"『{self.values[0]}』を襲撃することにしました")
+            await itx.response.send_message(
+                f"『{self.values[0]}』を襲撃することにしました\n"
+                f"何食わぬ顔で{discord.utils.get(itx.guild.channels,name="食堂").mention}へ戻ろう"
+                )
         #モノミの処理
         elif user_role == gv.CharaRole.MONOMI:
             gv.prog.remaining_processes -= 1
             mamorare_yatsu=self.values[0]
-            await itx.response.send_message(f"モノミと共に『{self.values[0]}』の部屋の前で夜通し見張ることにしました")
+            await itx.response.send_message(
+                f"モノミと共に『{self.values[0]}』の部屋の前で夜通し見張ることにしました\n"
+                f"{discord.utils.get(itx.guild.channels,name="食堂").mention}へ戻ろう"
+                )
         #アルターエゴの処理
         elif user_role == gv.CharaRole.ALTEREGO:
             gv.prog.remaining_processes -= 1
@@ -40,9 +46,15 @@ class Night_Select(discord.ui.Select):#1人選んでそれぞれの能力の対�
             target_chara_name = altered_yatsu
             is_despair = utils.check_despair(itx, target_chara_name)
             if is_despair:
-                await itx.response.send_message(f"『{target_chara_name}』は絶望〈ゼツボウ〉サイドです")
+                await itx.response.send_message(
+                    f"『{target_chara_name}』は絶望〈ゼツボウ〉サイドです\n"
+                    f"{discord.utils.get(itx.guild.channels,name="食堂").mention}へ戻ろう"
+                    )
             else:
-                await itx.response.send_message(f"『{target_chara_name}』は希望〈キボウ〉サイドです")
+                await itx.response.send_message(
+                    f"『{target_chara_name}』は希望〈キボウ〉サイドです\n"
+                    f"{discord.utils.get(itx.guild.channels,name="食堂").mention}へ戻ろう"
+                    )
             
         #出揃ったあとの相互作用の確認及び朝時間突入の通知
         if gv.prog.remaining_processes == 0:#対象選択全部終わったら
