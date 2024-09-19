@@ -343,6 +343,10 @@ class IAmKilledButton(discord.ui.View):
             "罪木蜜柑の能力を使用する場合は\n罪木蜜柑がこのボタンを押してください",
             view=TsumikiAbilityButton(target=interaction.user)
         )
+        await interaction.followup.send(
+            "以下のボタンを押して昼時間を開始してください",
+            view=DaytimeStartButton(self.bot)
+        )
 
 
 #罪木蜜柑の能力使用ボタン
