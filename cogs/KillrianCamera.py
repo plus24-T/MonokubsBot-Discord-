@@ -18,7 +18,9 @@ class KillrianCamera_Select(discord.ui.Select):
             disabled=False
             )
     async def callback(self, itx: discord.Interaction):
-        await itx.response.send_message(f"『{self.values[0]}』は{gv.get_chara_data(self.values[0]).role.to_japanese_name()}でした")
+        await itx.response.send_message(
+            f"『{self.values[0]}』は{gv.get_chara_data(self.values[0]).role.to_japanese_name()}でした"
+            )
         await discord.utils.get(itx.guild.channels,name="食堂").send(f"{self.values[0]}についての情報が得られたようです")
         self.disabled=True
 
