@@ -105,6 +105,7 @@ class Night_Select(discord.ui.Select):#1人選んでそれぞれの能力の対�
                         await discord.utils.get(itx.guild.channels,name="食堂").send(f"が！\n{gv.chara_role_list.monomi[0].nick}がモノミと共に身を挺して守ったため\n{osoware_yatsu}は助かりました\nしかし{gv.chara_role_list.monomi[0].nick}はモノミと共に爆死してしまったようです")
                         gv.chara_role_list.monomi[0].remove_roles(discord.utils.get(itx.guild.roles,name="生存"))
                         gv.table_data.kill_count+=1
+                        gv.prog.successful_attack=True
                         gv.chara_role_list.monomi[0].add_roles(discord.utils.get(itx.guild.roles,name="死亡"))
             #襲撃無効効果リセット
             for member in discord.utils.get(itx.guild.roles,name="生存").members:
