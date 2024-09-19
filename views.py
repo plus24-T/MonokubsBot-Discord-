@@ -333,6 +333,7 @@ class IAmKilledButton(discord.ui.View):
         button.disabled=True
         chara_name=interaction.user.nick
         gv.table_data.kill_count+=1
+        gv.prog.successful_attack=True
         await interaction.response.send_message(
             f"{chara_name}は死亡しました"
         )
@@ -370,4 +371,91 @@ class TsumikiAbilityButton(discord.ui.View):
                 f"{discord.utils.get(interaction.guild.channels,name="罪木蜜柑").mention}で判別結果を確認してください",
                 ephemeral=True
             )
-        
+
+
+#昼時間開始ボタン
+class DaytimeStartButton(discord.ui.View):
+    def __init__(self, bot : commands.Bot):
+        super().__init__(timeout=None)
+        self.bot = bot
+    @discord.ui.button(
+        label="昼時間を開始する",
+        style=discord.ButtonStyle.grey,
+        disabled=False
+    )
+    async def start_daytime(self,button:discord.ui.Button,interaction:discord.Interaction):
+        button.style=discord.ButtonStyle.success
+        button.disabled=True
+        if gv.prog.successful_attack:
+            gv.prog.successful_attack=False
+            await interaction.response.send_message(
+                f"{gv.table_data.day_count}日目の昼時間になりました\n"
+                "昼時間のアイテムや能力の使用を確認したあと、学級裁判（議論3分）を行い\n"
+                "学級裁判能力やアイテムの使用を確認したあと、投票によりおしおきの対象を決定してください"
+            )
+            await interaction.followup.send(
+                "昼時間開始時にキルリアンカメラを使用するときはこのボタンを押してください",
+                view=UseKillrianCameraButton(self.bot)
+            )
+            await interaction.followup.send(
+                "おしおきの対象者はこのボタンを押してください",
+                view=IAmPunishedButton(self.bot)
+            )
+        else:
+            await interaction.response.send_message(
+                f"{gv.table_data.day_count}日目の昼時間になりました\n"
+                "昼時間のアイテムや能力の使用を確認したあと、ブリーフィングタイム（議論3分）を行ってください\n"
+                "襲撃失敗のため学級裁判およびおしおきはありません、ブリーフィングタイムが終了次第\n"
+                "以下の【夜時間の開始】ボタンを押してください",
+                view=NightStartButton(self.bot)
+            )
+
+
+#キルリアンカメラ使用ボタン
+class UseKillrianCameraButton(discord.ui.View):
+    def __init__(self, bot : commands.Bot):
+        super().__init__(timeout=None)
+        self.bot = bot
+
+    @discord.ui.button(
+        label="キルリアンカメラを使用する"
+    )
+    async def use_silent_phone(self, button: discord.ui.Button, interaction: discord.Interaction):
+        await interaction.response.send_message("")#インタラクションに失敗しました（赤い字）の表示を阻止
+        # ボタンを押したメンバーのコンテキストを作成
+        ctx = await self.bot.get_context(interaction.message)
+        ctx.author = interaction.user
+        ctx.command = self.bot.get_command('killrian_camera')
+        await self.bot.invoke(ctx)
+
+
+#おしおきによる死亡の登録ボタン
+class IAmPunishedButton(discord.ui.View):
+    def __init__(self, bot : commands.Bot):
+        super().__init__(timeout=None)
+        self.bot = bot
+    @discord.ui.button(
+        label="私はおしおきの対象者です",
+        style=discord.ButtonStyle.danger,
+        disabled=False
+    )
+    async def i_am_punished(self,button:discord.ui.Button,interaction:discord.Interaction):
+        button.style=discord.ButtonStyle.success
+        button.disabled=True
+        chara_name=interaction.user.nick
+        await interaction.response.send_message(
+            f"{chara_name}はおしおきされました"
+        )
+        await interaction.user.remove_roles(discord.utils.get(interaction.guild.roles,name="生存"))
+        await interaction.user.add_roles(discord.utils.get(interaction.guild.roles,name="死亡"))
+        if gv.get_chara_data(chara_name).role == gv.CharaRole.TYOZETSUBO:
+                await interaction.followup.send(f"{chara_name}は超高校級の絶望でした\n\n{chara_name}の勝利です")
+        else:
+            if gv.table_data.kill_count==(gv.table_data.player_count-1)//3:
+                if discord.utils.get(interaction.guild.roles,name="生存") in gv.chara_role_list.kuro[0].roles:
+                    await interaction.followup.send("規定殺害数を達成しました\n\nクロの勝利です")
+            else:
+                await interaction.followup.send(
+                    "以下のボタンを押して夜時間を開始してください",
+                    view=NightStartButton(self.bot)
+                )
