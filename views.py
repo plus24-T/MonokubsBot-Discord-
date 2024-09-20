@@ -112,7 +112,7 @@ class Night0(discord.ui.View):
         disabled=False,
         style=discord.ButtonStyle.danger
     )
-    async def start_night0(self,button:discord.ui.Button,interaction:discord.Interaction):
+    async def start_night0(self,interaction:discord.Interaction,button:discord.ui.Button):
         await interaction.response.send_message("")#インタラクションに失敗しました（赤い字）の表示を阻止
         #コマンド呼び出し
         ctx = await self.bot.get_context(interaction.message)
@@ -132,7 +132,7 @@ class RehearsalEndConfirmationButton(discord.ui.View):
         disabled=False,
         style=discord.ButtonStyle.grey
     )
-    async def item_discarded(self,button:discord.ui.Button,interaction:discord.Interaction):
+    async def item_discarded(self,interaction:discord.Interaction,button:discord.ui.Button):
         button.style = discord.ButtonStyle.success
         button.disabled=True
         await interaction.response.send_message("確認しました、"
@@ -158,7 +158,7 @@ class NightStartButton(discord.ui.View):
         disabled=False,
         style=discord.ButtonStyle.grey
     )
-    async def night_start(self,button:discord.ui.Button,interaction:discord.Interaction):
+    async def night_start(self,interaction:discord.Interaction,button:discord.ui.Button):
         button.style = discord.ButtonStyle.success
         button.disabled=True
         await interaction.response.send_message(
@@ -189,7 +189,7 @@ class GoodNightButton(discord.ui.View):
         disabled=False,
         style=discord.ButtonStyle.danger
     )
-    async def night_start(self,button:discord.ui.Button,interaction:discord.Interaction):
+    async def night_start(self,interaction:discord.Interaction,button:discord.ui.Button):
         button.style = discord.ButtonStyle.gray
         button.disabled=True
         await interaction.response.send_message("")#赤文字回避
@@ -207,7 +207,7 @@ class NightIdentificationAbilitiesButton(discord.ui.View):
     @discord.ui.button(
         label="霧切響子"
     )
-    async def use_kirigiri_ability(self, button: discord.ui.Button, interaction: discord.Interaction):
+    async def use_kirigiri_ability(self, interaction: discord.Interaction ,button: discord.ui.Button):
         await interaction.response.send_message("")#インタラクションに失敗しました（赤い字）の表示を阻止
         # ボタンを押したメンバーのコンテキストを作成
         ctx = await self.bot.get_context(interaction.message)
@@ -218,7 +218,7 @@ class NightIdentificationAbilitiesButton(discord.ui.View):
     @discord.ui.button(
         label="葉隠康比呂"
     )
-    async def use_hagakure_ability(self, button: discord.ui.Button, interaction: discord.Interaction):
+    async def use_hagakure_ability(self, interaction: discord.Interaction, button: discord.ui.Button):
         await interaction.response.send_message("")#インタラクションに失敗しました（赤い字）の表示を阻止
         # ボタンを押したメンバーのコンテキストを作成
         ctx = await self.bot.get_context(interaction.message)
@@ -236,7 +236,7 @@ class NightIdentificationItemsButton(discord.ui.View):
     @discord.ui.button(
         label="無言電話"
     )
-    async def use_silent_phone(self, button: discord.ui.Button, interaction: discord.Interaction):
+    async def use_silent_phone(self, interaction: discord.Interaction, button: discord.ui.Button):
         await interaction.response.send_message("")#インタラクションに失敗しました（赤い字）の表示を阻止
         # ボタンを押したメンバーのコンテキストを作成
         ctx = await self.bot.get_context(interaction.message)
@@ -247,7 +247,7 @@ class NightIdentificationItemsButton(discord.ui.View):
     @discord.ui.button(
         label="誰かの卒業アルバム"
     )
-    async def use_silent_phone(self, button: discord.ui.Button, interaction: discord.Interaction):
+    async def use_silent_phone(self, interaction: discord.Interaction, button: discord.ui.Button):
         await interaction.response.send_message("")#インタラクションに失敗しました（赤い字）の表示を阻止
         # ボタンを押したメンバーのコンテキストを作成
         ctx = await self.bot.get_context(interaction.message)
@@ -258,7 +258,7 @@ class NightIdentificationItemsButton(discord.ui.View):
     @discord.ui.button(
         label="おでこのメガネ"
     )
-    async def use_silent_phone(self, button: discord.ui.Button, interaction: discord.Interaction):
+    async def use_silent_phone(self, interaction: discord.Interaction, button: discord.ui.Button):
         await interaction.response.send_message("")#インタラクションに失敗しました（赤い字）の表示を阻止
         # ボタンを押したメンバーのコンテキストを作成
         ctx = await self.bot.get_context(interaction.message)
@@ -276,14 +276,14 @@ class NightEscortItemsButton(discord.ui.View):
     @discord.ui.button(
         label="黄金銃"
     )
-    async def golden_gun(self, button: discord.ui.Button, interaction: discord.Interaction):
+    async def golden_gun(self, interaction: discord.Interaction, button: discord.ui.Button):
         gv.get_chara_data(interaction.user.nick).escorted=True
         await interaction.response.send_message(f"{interaction.user.nick}が黄金銃を使用しました\n今夜{interaction.user.nick}への襲撃は無効になります")
 
     @discord.ui.button(
         label="ジャスティスロボ"
     )
-    async def justice_robot(self, button: discord.ui.Button, interaction: discord.Interaction):
+    async def justice_robot(self, interaction: discord.Interaction, button: discord.ui.Button):
         #生存メンバーのリストから選択候補のリストを作成
         living_members = discord.utils.get(interaction.guild.roles,name="生存").members
         select_op_living_members = []
@@ -329,7 +329,7 @@ class IAmKilledButton(discord.ui.View):
         style=discord.ButtonStyle.danger,
         disabled=False
     )
-    async def i_am_killed(self,button:discord.ui.Button,interaction:discord.Interaction):
+    async def i_am_killed(self,interaction:discord.Interaction,button:discord.ui.Button):
         button.style=discord.ButtonStyle.success
         button.disabled=True
         chara_name=interaction.user.nick
@@ -362,7 +362,7 @@ class TsumikiAbilityButton(discord.ui.View):
         style=discord.ButtonStyle.gray,
         disabled=False
     )
-    async def use_tsumiki_ability(self,button:discord.ui.Button,interaction:discord.Interaction,target:discord.Member):
+    async def use_tsumiki_ability(self,interaction:discord.Interaction,button:discord.ui.Button,target:discord.Member):
         if interaction.user.nick != "罪木蜜柑":
             await interaction.response.send_message("あなたは罪木蜜柑ではありません",ephemeral=True)
         else:
@@ -391,7 +391,7 @@ class DaytimeStartButton(discord.ui.View):
         style=discord.ButtonStyle.grey,
         disabled=False
     )
-    async def start_daytime(self,button:discord.ui.Button,interaction:discord.Interaction):
+    async def start_daytime(self,interaction:discord.Interaction,button:discord.ui.Button):
         button.style=discord.ButtonStyle.success
         button.disabled=True
         if gv.prog.successful_attack:
@@ -428,7 +428,7 @@ class UseKillrianCameraButton(discord.ui.View):
     @discord.ui.button(
         label="キルリアンカメラを使用する"
     )
-    async def use_silent_phone(self, button: discord.ui.Button, interaction: discord.Interaction):
+    async def use_silent_phone(self, interaction: discord.Interaction, button: discord.ui.Button):
         await interaction.response.send_message("")#インタラクションに失敗しました（赤い字）の表示を阻止
         # ボタンを押したメンバーのコンテキストを作成
         ctx = await self.bot.get_context(interaction.message)
@@ -447,7 +447,7 @@ class IAmPunishedButton(discord.ui.View):
         style=discord.ButtonStyle.danger,
         disabled=False
     )
-    async def i_am_punished(self,button:discord.ui.Button,interaction:discord.Interaction):
+    async def i_am_punished(self,interaction:discord.Interaction,button:discord.ui.Button):
         button.style=discord.ButtonStyle.success
         button.disabled=True
         chara_name=interaction.user.nick
@@ -485,7 +485,7 @@ class UseViseButton(discord.ui.View):
         style=discord.ButtonStyle.gray,
         disabled=False
     )
-    async def use_vise(self,button:discord.ui.Button,interaction:discord.Interaction):
+    async def use_vise(self,interaction:discord.Interaction,button:discord.ui.Button):
         gv.prog.vise_effect = True
         await interaction.response.send_message(
             f"{interaction.user.nick}は万力を使用しました\n"
