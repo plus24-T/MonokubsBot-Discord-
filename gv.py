@@ -198,5 +198,6 @@ class ProgressData:
     remaining_processes : int = 0 #夜時間に処理する対象選択や判別の数、全て処理してから相互作用の確認後、朝へ
     ok_mati : int = 0 #裏切者の開始時情報確認待ち用、全員確認したら0日目の昼を開始する
     successful_attack : bool = False
+    vise_effect : bool = False
 
 prog = ProgressData()

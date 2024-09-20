@@ -460,6 +460,27 @@ class IAmPunishedButton(discord.ui.View):
                     await interaction.followup.send("規定殺害数を達成しました\n\nクロの勝利です")
             else:
                 await interaction.followup.send(
+                    "万力を使用する場合は以下のボタンを押してください",
+                    view=UseViseButton()
+                )
+                await interaction.followup.send(
                     "以下のボタンを押して夜時間を開始してください",
                     view=NightStartButton(self.bot)
                 )
+
+
+#万力使用ボタン
+class UseViseButton(discord.ui.View):
+    def __init__(self):
+        super().__init__(timeout=None)
+    @discord.ui.button(
+        label="万力を使用します",
+        style=discord.ButtonStyle.gray,
+        disabled=False
+    )
+    async def use_vise(self,button:discord.ui.Button,interaction:discord.Interaction):
+        gv.prog.vise_effect = True
+        await interaction.response.send_message(
+            f"{interaction.user.nick}は万力を使用しました\n"
+            "クロは今夜襲撃を行うことができません"
+        )
