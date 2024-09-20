@@ -55,7 +55,7 @@ class RoleSleMenu(discord.ui.View):
         #全員の登録が終わったらクロと裏切者を各裏切者に通知
         if gv.prog.role_registered == gv.table_data.player_count:
             if len(gv.chara_role_list.uragiri)==0:#裏切者欠け（居ない）時の処理
-                discord.utils.get(itx.guild.channels,name="食堂").send(
+                await discord.utils.get(itx.guild.channels,name="食堂").send(
                     "0日目の昼です、皆様、しばし御歓談ください\n"
                     "（キャラ能力説明等を行ってください\n"
                     "【夜時間を開始する】ボタンで夜時間が始まります）",
@@ -85,14 +85,13 @@ class OK_Button(discord.ui.View):
         disabled=False,
         style=discord.ButtonStyle.gray
     )
-    async def ok(self,interaction:discord.Interaction):
+    async def ok(self,interaction:discord.Interaction,button:discord.ui.Button):
         gv.prog.ok_mati-=1
-        self.style=discord.ButtonStyle.success
-        self.disabled=True
         await interaction.response.send_message(
             "確認しました、"
             f"{discord.utils.get(interaction.guild.channels,name="食堂").mention}"
             "へ移動し、しばらくお待ちください")
+        self.stop()
         if gv.prog.ok_mati==0:
              await discord.utils.get(interaction.guild.channels,name="食堂").send(
                 "0日目の昼です、皆様、しばし御歓談ください\n"
@@ -113,7 +112,11 @@ class Night0(discord.ui.View):
         style=discord.ButtonStyle.danger
     )
     async def start_night0(self,interaction:discord.Interaction,button:discord.ui.Button):
-        await interaction.response.send_message("")#インタラクションに失敗しました（赤い字）の表示を阻止
+        await interaction.response.edit_message(
+                "0日目の昼です、皆様、しばし御歓談ください\n"
+                "（キャラ能力説明等を行ってください\n"
+                "【夜時間を開始する】ボタンで夜時間が始まります）"
+        )#インタラクションに失敗しました（赤い字）の表示を阻止
         #コマンド呼び出し
         ctx = await self.bot.get_context(interaction.message)
         ctx.command = self.bot.get_command("rehearsal")#ここでコマンドを指定
