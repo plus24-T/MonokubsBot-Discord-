@@ -19,29 +19,15 @@ class CharaRole(Enum):
     ZAKO = auto()
     ZANTOU = auto()
     UNKNOWN = 999
-    
-    # 変換用辞書
-    _nameDict : dict= {
-        SIRO:"シロ",
-        ALTEREGO:"アルターエゴ",
-        MIRAIKIKAN:"未来機関",
-        TYOZETSUBO:"超高校級の絶望",
-        ZETSUBOBYO:"絶望病患者",
-        MONOMI:"モノミ",
-        KURO:"クロ",
-        URAGIRI:"裏切者",
-        ZAKO:"ザコケモノ",
-        ZANTOU:"絶望の残党",
-    }
 
     # 日本名を取得
     def to_japanese_name(self):
-        return CharaRole._nameDict[self]
+        return _nameDict[self]
     
     # 日本名 → Enum値
     @classmethod
     def parse(cls, jap):
-        for key, value in CharaRole._nameDict.items():
+        for key, value in _nameDict.items():
             if value == jap:
                 return key
         return CharaRole.UNKNOWN
@@ -53,6 +39,19 @@ class CharaRole(Enum):
             return CharaRole.MIRAIKIKAN
         return CharaRole.TYOZETSUBO
 
+# 変換用辞書
+_nameDict : dict = {
+    CharaRole.SIRO:"シロ",
+    CharaRole.ALTEREGO:"アルターエゴ",
+    CharaRole.MIRAIKIKAN:"未来機関",
+    CharaRole.TYOZETSUBO:"超高校級の絶望",
+    CharaRole.ZETSUBOBYO:"絶望病患者",
+    CharaRole.MONOMI:"モノミ",
+    CharaRole.KURO:"クロ",
+    CharaRole.URAGIRI:"裏切者",
+    CharaRole.ZAKO:"ザコケモノ",
+    CharaRole.ZANTOU:"絶望の残党",
+}
 
 # 参加キャラのデータを格納するクラス
 @dataclasses.dataclass
