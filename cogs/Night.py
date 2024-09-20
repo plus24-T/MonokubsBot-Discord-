@@ -93,33 +93,40 @@ class Night_Select(discord.ui.Select):#1人選んでそれぞれの能力の対�
                     view=views.DaytimeStartButton(self.bot)
                     )
             else:
-                #襲撃先発表メッセージ
-                await discord.utils.get(itx.guild.channels,name="食堂").send(
-                    f"{osoware_yatsu}が襲撃されました"
-                    )
-                #襲撃無効メッセージ
-                if gv.get_chara_data(osoware_yatsu).escorted:
+                if gv.prog.vise_effect:
                     await discord.utils.get(itx.guild.channels,name="食堂").send(
-                        f"しかし{osoware_yatsu}には襲撃無効が付与されていたため\n襲撃は無効になりました",
-                        view=views.DaytimeStartButton(self.bot)
-                        )
+                    "昨夜はクロによる襲撃はありませんでした",
+                    view=views.DaytimeStartButton
+                    )
+                    gv.prog.vise_effect=False
                 else:
-                    #モノミ爆死メッセージおよび死亡ロール付与        
-                    if exploded:
+                    #襲撃先発表メッセージ
+                    await discord.utils.get(itx.guild.channels,name="食堂").send(
+                        f"{osoware_yatsu}が襲撃されました"
+                        )
+                    #襲撃無効メッセージ
+                    if gv.get_chara_data(osoware_yatsu).escorted:
                         await discord.utils.get(itx.guild.channels,name="食堂").send(
-                            f"が！\n{gv.chara_role_list.monomi[0].nick}がモノミと共に身を挺して守ったため\n{osoware_yatsu}は助かりました\nしかし{gv.chara_role_list.monomi[0].nick}はモノミと共に爆死してしまったようです",
+                            f"しかし{osoware_yatsu}には襲撃無効が付与されていたため\n襲撃は無効になりました",
                             view=views.DaytimeStartButton(self.bot)
                             )
-                        gv.chara_role_list.monomi[0].remove_roles(discord.utils.get(itx.guild.roles,name="生存"))
-                        gv.table_data.kill_count+=1
-                        gv.prog.successful_attack=True
-                        gv.chara_role_list.monomi[0].add_roles(discord.utils.get(itx.guild.roles,name="死亡"))
                     else:
-                        await discord.utils.get(itx.guild.channels,name="食堂").send(
-                            "自力救済→他力救済→両隣からのアイテム譲渡の順に最後の抵抗を試みてください\n"
-                            "襲撃によって死亡した人は【殺られた～】ボタンを押してください",
-                            view=views.IAmKilledButton(self.bot)
-                            )
+                        #モノミ爆死メッセージおよび死亡ロール付与        
+                        if exploded:
+                            await discord.utils.get(itx.guild.channels,name="食堂").send(
+                                f"が！\n{gv.chara_role_list.monomi[0].nick}がモノミと共に身を挺して守ったため\n{osoware_yatsu}は助かりました\nしかし{gv.chara_role_list.monomi[0].nick}はモノミと共に爆死してしまったようです",
+                                view=views.DaytimeStartButton(self.bot)
+                                )
+                            gv.chara_role_list.monomi[0].remove_roles(discord.utils.get(itx.guild.roles,name="生存"))
+                            gv.table_data.kill_count+=1
+                            gv.prog.successful_attack=True
+                            gv.chara_role_list.monomi[0].add_roles(discord.utils.get(itx.guild.roles,name="死亡"))
+                        else:
+                            await discord.utils.get(itx.guild.channels,name="食堂").send(
+                                "自力救済→他力救済→両隣からのアイテム譲渡の順に最後の抵抗を試みてください\n"
+                                "襲撃によって死亡した人は【殺られた～】ボタンを押してください",
+                                view=views.IAmKilledButton(self.bot)
+                                )
             #襲撃無効効果リセット
             for member in discord.utils.get(itx.guild.roles,name="生存").members:
                 gv.get_chara_data(member.nick).escorted=False
@@ -149,10 +156,13 @@ class Night(commands.Cog):
         #共通チャンネルに投稿
         await itx.response.send_message("消灯時間になりました、おやすみなさい\n夜が明けるまでしばらくお待ちください")
         #クロのプライベートチャンネルに投稿
-        gv.prog.remaining_processes += 1 #後々アイテム効果で行なえない可能性があるのでちゃんと数えておく
-        await discord.utils.get(itx.guild.channels,name=gv.chara_role_list.kuro[0].nick).send(
-            "襲撃の対象を選択してください",
-            view=Night_View(options=select_op_living_members,bot=self.bot)
+        if gv.prog.vise_effect:
+            await itx.followup.send("万力の効果により今夜はクロの襲撃はありません")
+        else:
+            gv.prog.remaining_processes += 1 #後々アイテム効果で行なえない可能性があるのでちゃんと数えておく
+            await discord.utils.get(itx.guild.channels,name=gv.chara_role_list.kuro[0].nick).send(
+                "襲撃の対象を選択してください",
+                view=Night_View(options=select_op_living_members,bot=self.bot)
             )
         #アルターエゴ(が生存しているなら)のプライベートチャンネルに投稿
         if gv.chara_role_list.alterego[0] in living_members:
