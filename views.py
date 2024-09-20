@@ -83,11 +83,12 @@ class OK_Button(discord.ui.View):
     @discord.ui.button(
         label="OK",
         disabled=False,
-        style=discord.ButtonStyle.success
+        style=discord.ButtonStyle.gray
     )
-    async def ok(self,button:discord.ui.Button,interaction:discord.Interaction):
+    async def ok(self,interaction:discord.Interaction,button:discord.ui.Button):
         gv.prog.ok_mati-=1
-        self.disabled=True
+        button.style=discord.ButtonStyle.success
+        button.disabled=True
         await interaction.response.send_message(
             "確認しました、"
             f"{discord.utils.get(interaction.guild.channels,name="食堂").mention}"
