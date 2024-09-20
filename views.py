@@ -339,14 +339,17 @@ class IAmKilledButton(discord.ui.View):
         )
         await interaction.user.remove_roles(discord.utils.get(interaction.guild.roles,name="生存"))
         await interaction.user.add_roles(discord.utils.get(interaction.guild.roles,name="死亡"))
-        await interaction.followup.send(
-            "罪木蜜柑の能力を使用する場合は\n罪木蜜柑がこのボタンを押してください",
-            view=TsumikiAbilityButton(target=interaction.user)
-        )
-        await interaction.followup.send(
-            "以下のボタンを押して昼時間を開始してください",
-            view=DaytimeStartButton(self.bot)
-        )
+        if gv.get_chara_data(chara_name).role==gv.CharaRole.KURO:
+            pass
+        else:
+            await interaction.followup.send(
+                "罪木蜜柑の能力を使用する場合は\n罪木蜜柑がこのボタンを押してください",
+                view=TsumikiAbilityButton(target=interaction.user)
+            )
+            await interaction.followup.send(
+                "以下のボタンを押して昼時間を開始してください",
+                view=DaytimeStartButton(self.bot)
+            )
 
 
 #罪木蜜柑の能力使用ボタン
@@ -452,21 +455,24 @@ class IAmPunishedButton(discord.ui.View):
         )
         await interaction.user.remove_roles(discord.utils.get(interaction.guild.roles,name="生存"))
         await interaction.user.add_roles(discord.utils.get(interaction.guild.roles,name="死亡"))
-        if gv.get_chara_data(chara_name).role == gv.CharaRole.TYOZETSUBO:
-                await interaction.followup.send(f"{chara_name}は超高校級の絶望でした\n\n{chara_name}の勝利です")
+        if gv.get_chara_data(chara_name).role == gv.CharaRole.KURO:
+            pass
         else:
-            if gv.table_data.kill_count==(gv.table_data.player_count-1)//3:
-                if discord.utils.get(interaction.guild.roles,name="生存") in gv.chara_role_list.kuro[0].roles:
-                    await interaction.followup.send("規定殺害数を達成しました\n\nクロの勝利です")
+            if gv.get_chara_data(chara_name).role == gv.CharaRole.TYOZETSUBO:
+                    await interaction.followup.send(f"{chara_name}は超高校級の絶望でした\n\n{chara_name}の勝利です")
             else:
-                await interaction.followup.send(
-                    "万力を使用する場合は以下のボタンを押してください",
-                    view=UseViseButton()
-                )
-                await interaction.followup.send(
-                    "以下のボタンを押して夜時間を開始してください",
-                    view=NightStartButton(self.bot)
-                )
+                if gv.table_data.kill_count==(gv.table_data.player_count-1)//3:
+                    if discord.utils.get(interaction.guild.roles,name="生存") in gv.chara_role_list.kuro[0].roles:
+                        await interaction.followup.send("規定殺害数を達成しました\n\nクロの勝利です")
+                else:
+                    await interaction.followup.send(
+                        "万力を使用する場合は以下のボタンを押してください",
+                        view=UseViseButton()
+                    )
+                    await interaction.followup.send(
+                        "以下のボタンを押して夜時間を開始してください",
+                        view=NightStartButton(self.bot)
+                    )
 
 
 #万力使用ボタン
