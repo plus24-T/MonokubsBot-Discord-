@@ -85,16 +85,16 @@ class OK_Button(discord.ui.View):
         disabled=False,
         style=discord.ButtonStyle.gray
     )
-    async def ok(self,interaction:discord.Interaction,button:discord.ui.Button):
+    async def ok(self,interaction:discord.Interaction):
         gv.prog.ok_mati-=1
-        button.style=discord.ButtonStyle.success
-        button.disabled=True
+        self.style=discord.ButtonStyle.success
+        self.disabled=True
         await interaction.response.send_message(
             "確認しました、"
             f"{discord.utils.get(interaction.guild.channels,name="食堂").mention}"
             "へ移動し、しばらくお待ちください")
         if gv.prog.ok_mati==0:
-            discord.utils.get(interaction.guild.channels,name="食堂").send(
+             await discord.utils.get(interaction.guild.channels,name="食堂").send(
                 "0日目の昼です、皆様、しばし御歓談ください\n"
                 "（キャラ能力説明等を行ってください\n"
                 "【夜時間を開始する】ボタンで夜時間が始まります）",
