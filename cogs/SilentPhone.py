@@ -14,12 +14,12 @@ class SilentPhone_Select(discord.ui.Select):
             options=options,
             disabled=False
             )
-    async def callback(self, itx: discord.Interaction):
+    async def callback(self, interaction: discord.Interaction):
         if gv.get_chara_data(self.values[0]).role == gv.CharaRole.SIRO:
-            await itx.response.send_message(f"『{self.values[0]}』は シロ です")
+            await interaction.response.send_message(f"『{self.values[0]}』は シロ です")
         else:
-            await itx.response.send_message(f"『{self.values[0]}』は シロ ではありません")
-        await discord.utils.get(itx.guild.channels,name="食堂").send("電話の呼び出し音は鳴りやんだようだ")
+            await interaction.response.send_message(f"『{self.values[0]}』は シロ ではありません")
+        await discord.utils.get(interaction.guild.channels,name="食堂").send("電話の呼び出し音は鳴りやんだようだ")
         self.disabled=True
 
 class SilentPhone_View(discord.ui.View):
@@ -36,13 +36,13 @@ class SilentPhone(commands.Cog):#コマンド名、頭大文字でクラス作�
             name="silent_phone",#coomand_nameがコマンドになる
             description="無言電話を使用します"#コマンドリストに表示される説明文            
             )
-    async def silent_phone(self,itx:discord.Interaction): 
-        living_members = discord.utils.get(itx.guild.roles,name="生存").members
+    async def silent_phone(self,interaction:discord.Interaction): 
+        living_members = discord.utils.get(interaction.guild.roles,name="生存").members
         select_op_living_members = []    #生存メンバーのリストから選択候補のリストを作成
         for member in living_members:
             select_op_living_members.append(discord.SelectOption(label=member.nick))
-        await itx.response.send_message(f"{itx.user.nick}が電話をかけています、少々お待ちください")
-        await discord.utils.get(itx.guild.channels,name=itx.user.nick).send(
+        await interaction.response.send_message(f"{interaction.user.nick}が電話をかけています、少々お待ちください")
+        await discord.utils.get(interaction.guild.channels,name=interaction.user.nick).send(
             "判別の対象を選択してください",
             view=SilentPhone_View(options=select_op_living_members)
             )
