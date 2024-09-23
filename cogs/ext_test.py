@@ -14,8 +14,8 @@ class Ext_test(commands.Cog):
             name="ext_test",
             description="エクステンションのテスト奴"
             )
-    async def ext_test(self, itx:discord.Interaction):
-        await itx.response.send_message("TEST!")
+    async def ext_test(self, interaction:discord.Interaction):
+        await interaction.response.send_message("TEST!")
 
 async def setup(bot:commands.Bot):
     await bot.add_cog(

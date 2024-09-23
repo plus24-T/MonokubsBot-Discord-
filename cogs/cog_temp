@@ -14,8 +14,8 @@ class Cog名(commands.Cog):#Cog名、任意だが分かりやすさのために�
             name="command_name",#coomand_nameがコマンドになる
             description="commandの説明"#コマンドリストに表示される説明文
             )
-    async def command_name(self, itx:discord.Interaction):#ここが処理内容、必要な引数とか設定する
-        await itx.response.send_message("TEST!")
+    async def command_name(self, interaction:discord.Interaction):#ここが処理内容、必要な引数とか設定する
+        await interaction.response.send_message("TEST!")
 
 async def setup(bot:commands.Bot):
     await bot.add_cog(

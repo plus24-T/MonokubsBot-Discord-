@@ -22,8 +22,9 @@ class CardList(commands.Cog):
             name="card_list",#comand_nameがコマンドになる
             description="ページ送り型のカードリスト出す奴"#コマンドリストに表示される説明文
             )
-    async def card_list(self, itx:discord.Interaction):#ここが処理内容、必要な引数とか設定する
-        await Paginator.Simple().start(itx, pages=embeds)
+    async def card_list(self, interaction
+                        :discord.Interaction):#ここが処理内容、必要な引数とか設定する
+        await Paginator.Simple().start(interaction, pages=embeds)
 
 async def setup(bot:commands.Bot):
     await bot.add_cog(

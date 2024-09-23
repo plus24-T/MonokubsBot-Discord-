@@ -28,9 +28,9 @@ async def on_chara_selected(interaction: discord.Interaction, select: discord.ui
     )
 
 # 希望・絶望サイド判定（占い）  絶望サイド：True  希望サイド：False
-def check_despair(itx: discord.Interaction, target_chara_name : str) -> bool:
+def check_despair(interaction: discord.Interaction, target_chara_name : str) -> bool:
     # 希望サイド判定を行う閾値
-    any_member_died : bool = len(discord.utils.get(itx.guild.roles,name="死亡").members) > 0
+    any_member_died : bool = len(discord.utils.get(interaction.guild.roles,name="死亡").members) > 0
     despair_threshold = gv.CharaRole.get_despair_threshold(any_member_died)
     target_role = gv.get_chara_data(target_chara_name).role
     
@@ -43,7 +43,7 @@ def check_despair(itx: discord.Interaction, target_chara_name : str) -> bool:
             if len(gv.chara_role_list.zantou) == 0:
                 return True
             else:
-                if gv.chara_role_list.zantou[0] in discord.utils.get(itx.guild.roles,name="死亡").members:
+                if gv.chara_role_list.zantou[0] in discord.utils.get(interaction.guild.roles,name="死亡").members:
                     return True
                 else:
                     return False

@@ -15,9 +15,9 @@ class Yasuke(commands.Cog):#コマンド名、頭大文字でクラス作成
             name="yasuke",#coomand_nameがコマンドになる
             description="全ての管理用サーバーロールを剥奪します"#コマンドリストに表示される説明文
             )
-    async def yasuke(self, itx:discord.Interaction):#ここが処理内容、必要な引数とか設定する
-        await itx.response.defer()
-        guild = itx.user.guild
+    async def yasuke(self, interaction:discord.Interaction):#ここが処理内容、必要な引数とか設定する
+        await interaction.response.defer()
+        guild = interaction.user.guild
         for member in guild.members:
             if member != guild.owner:
                 if not member.bot:
@@ -25,7 +25,7 @@ class Yasuke(commands.Cog):#コマンド名、頭大文字でクラス作成
                         if role != guild.default_role:                                  
                             await member.remove_roles(role)
                             await member.edit(nick=None)
-        await itx.followup.send("ロールリセット処理は成功しました")
+        await interaction.followup.send("ロールリセット処理は成功しました")
 
 async def setup(bot:commands.Bot):
     await bot.add_cog(
