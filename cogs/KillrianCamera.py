@@ -17,11 +17,11 @@ class KillrianCamera_Select(discord.ui.Select):
             options=options,
             disabled=False
             )
-    async def callback(self, itx: discord.Interaction):
-        await itx.response.send_message(
+    async def callback(self, interaction: discord.Interaction):
+        await interaction.response.send_message(
             f"『{self.values[0]}』は{gv.get_chara_data(self.values[0]).role.to_japanese_name()}でした"
             )
-        await discord.utils.get(itx.guild.channels,name="食堂").send(f"{self.values[0]}についての情報が得られたようです")
+        await discord.utils.get(interaction.guild.channels,name="食堂").send(f"{self.values[0]}についての情報が得られたようです")
         self.disabled=True
 
 class KillrianCamera_View(discord.ui.View):
@@ -38,13 +38,14 @@ class KillrianCamera(commands.Cog):#コマンド名、頭大文字でクラス�
             name="killrian_camera",#coomand_nameがコマンドになる
             description="キルリアンカメラの能力を処理します"#コマンドリストに表示される説明文
             )
-    async def killrian_camera(self, itx:discord.Interaction):#ここが処理内容、必要な引数とか設定する
-        dead_members = discord.utils.get(itx.guild.roles,name="死亡").members
+    async def killrian_camera(self, interaction
+                              :discord.Interaction):#ここが処理内容、必要な引数とか設定する
+        dead_members = discord.utils.get(interaction.guild.roles,name="死亡").members
         select_op_dead_members = []    #死亡メンバーのリストから選択候補のリストを作成
         for member in dead_members:
             select_op_dead_members.append(discord.SelectOption(label=member.nick))
-        await itx.response.send_message(f"{itx.user.nick}がキルリアンカメラを調べています、少々お待ちください")
-        await discord.utils.get(itx.guild.channels,name=itx.user.nick).send(
+        await interaction.response.send_message(f"{interaction.user.nick}がキルリアンカメラを調べています、少々お待ちください")
+        await discord.utils.get(interaction.guild.channels,name=interaction.user.nick).send(
             "ロールを見る対象を選択してください",
             view=KillrianCamera_View(options=select_op_dead_members)
             )
