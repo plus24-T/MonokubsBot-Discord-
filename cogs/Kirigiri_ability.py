@@ -14,15 +14,15 @@ class Kirigiri_Select(discord.ui.Select):
             options=options,
             disabled=False
             )
-    async def callback(self, itx: discord.Interaction):
+    async def callback(self, interaction: discord.Interaction):
         target_chara_name = self.values[0]
-        is_despair = utils.check_despair(itx, target_chara_name)
+        is_despair = utils.check_despair(interaction, target_chara_name)
         if is_despair:
-            await itx.response.send_message(f"『{target_chara_name}』は絶望〈ゼツボウ〉サイドです")
+            await interaction.response.send_message(f"『{target_chara_name}』は絶望〈ゼツボウ〉サイドです")
         else:
-            await itx.response.send_message(f"『{target_chara_name}』は希望〈キボウ〉サイドです")
+            await interaction.response.send_message(f"『{target_chara_name}』は希望〈キボウ〉サイドです")
 
-        await discord.utils.get(itx.guild.channels,name="食堂").send("推理がまとめ終わったようです")
+        await discord.utils.get(interaction.guild.channels,name="食堂").send("推理がまとめ終わったようです")
         self.disabled=True
 
 class Kirigiri_View(discord.ui.View):
@@ -39,16 +39,16 @@ class Kirigiri(commands.Cog):#コマンド名、頭大文字でクラス作成
             name="kirigiri",#coomand_nameがコマンドになる
             description="霧切響子の能力を使用します"#コマンドリストに表示される説明文            
             )
-    async def kirigiri(self,itx:discord.Interaction):
+    async def kirigiri(self,interaction:discord.Interaction):
         if gv.table_data.day <= 3:
-            await itx.response.send_message("霧切響子「推理をまとめるにはまだ証拠が足りないわ」\n（使用条件：４日目以降を満たしていません）")
+            await interaction.response.send_message("霧切響子「推理をまとめるにはまだ証拠が足りないわ」\n（使用条件：４日目以降を満たしていません）")
             pass 
-        living_members = discord.utils.get(itx.guild.roles,name="生存").members
+        living_members = discord.utils.get(interaction.guild.roles,name="生存").members
         select_op_living_members = []    #生存メンバーのリストから選択候補のリストを作成
         for member in living_members:
             select_op_living_members.append(discord.SelectOption(label=member.nick))
-        await itx.response.send_message("霧切響子が推理をまとめています、少々お待ちください")
-        await discord.utils.get(itx.guild.channels,name="霧切響子").send(
+        await interaction.response.send_message("霧切響子が推理をまとめています、少々お待ちください")
+        await discord.utils.get(interaction.guild.channels,name="霧切響子").send(
             "判別の対象を選択してください",
             view=Kirigiri_View(options=select_op_living_members)
             )
