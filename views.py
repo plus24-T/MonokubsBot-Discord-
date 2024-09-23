@@ -137,7 +137,7 @@ class RehearsalEndConfirmationButton(discord.ui.View):
                 f"{discord.utils.get(interaction.guild.channels,name="食堂").mention}"
                 "へお戻りください"    
                 )
-        discord.utils.get(interaction.guild.channels,name="食堂").send(
+        await discord.utils.get(interaction.guild.channels,name="食堂").send(
                 "1日目の昼時間が始まりました、昼時間のアイテムや能力使用を全て確認したあと\n"
                 "ブリーフィングタイム（3分間）を行ってください\n"
                 "【夜時間を開始する】ボタンで夜時間が始まります）",
@@ -306,7 +306,7 @@ class JusticeRobot_Select(discord.ui.Select):
         target_name = self.values[0]
         gv.get_chara_data(target_name).escorted = True
         await interaction.response.send_message(f"{target_name}を護衛対象に選択しました")
-        discord.utils.get(interaction.guild.channels,name="食堂").send(
+        await discord.utils.get(interaction.guild.channels,name="食堂").send(
             f"{target_name}が護衛対象に選択されました"
         )
   
