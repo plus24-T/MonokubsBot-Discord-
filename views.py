@@ -29,9 +29,9 @@ class RoleSleMenu(discord.ui.View):
         ],
         custom_id="role_sle_menu"
     )
-    async def select(self, itx: discord.Interaction, select: discord.ui.Select):
+    async def select(self, interaction: discord.Interaction, select: discord.ui.Select):
         #データの格納
-        userNickName = itx.user.nick
+        userNickName = interaction.user.nick
         gv.get_chara_data(userNickName).role = gv.CharaRole.parse(select.values[0]) 
         #登録済み人数のカウント
         gv.prog.role_registered += 1
@@ -41,21 +41,21 @@ class RoleSleMenu(discord.ui.View):
                 "絶望病患者":gv.chara_role_list.zetsubobyo,"ザコケモノ":gv.chara_role_list.zako,
                 "未来機関":gv.chara_role_list.miraikikan,"絶望の残党":gv.chara_role_list.zantou
                 }
-        memlis[select.values[0]].append(itx.user)
+        memlis[select.values[0]].append(interaction.user)
        #プレイヤー（キャラ紐づけデータが機能しているか確認用、そのうち消す）
         print(gv.get_chara_data(userNickName))
         #登録内容の確認メッセージ投稿
-        await itx.response.send_message("オマエハ、" + select.values[0] + " ダナ、了解シタ")
+        await interaction.response.send_message("オマエハ、" + select.values[0] + " ダナ、了解シタ")
         #裏切者以外を食堂（共通チャンネル）へ誘導
         if gv.get_chara_data(userNickName).role != gv.CharaRole.URAGIRI:
-            await itx.followup.send(
-                f"{discord.utils.get(itx.guild.channels,name="食堂").mention}"
+            await interaction.followup.send(
+                f"{discord.utils.get(interaction.guild.channels,name="食堂").mention}"
                 "へ移動して、しばらくお待ちください。"
                 )
         #全員の登録が終わったらクロと裏切者を各裏切者に通知
         if gv.prog.role_registered == gv.table_data.player_count:
             if len(gv.chara_role_list.uragiri)==0:#裏切者欠け（居ない）時の処理
-                await discord.utils.get(itx.guild.channels,name="食堂").send(
+                await discord.utils.get(interaction.guild.channels,name="食堂").send(
                     "0日目の昼です、皆様、しばし御歓談ください\n"
                     "（キャラ能力説明等を行ってください\n"
                     "【夜時間を開始する】ボタンで夜時間が始まります）",
@@ -67,7 +67,7 @@ class RoleSleMenu(discord.ui.View):
                     uragiriyatura += uragirimono.nick+"\n"
                 for uragirimono in gv.chara_role_list.uragiri:
                     gv.prog.ok_mati+=1
-                    await discord.utils.get(itx.guild.channels,name=uragirimono.nick).send(
+                    await discord.utils.get(interaction.guild.channels,name=uragirimono.nick).send(
                         f"クロは『{gv.chara_role_list.kuro[0].nick}』です\n\n{uragiriyatura}は裏切者です"
                         "\n\nクロと裏切者が誰か読み終わったらOKを押して下さい",
                         view=OK_Button(self.bot)
@@ -91,7 +91,7 @@ class OK_Button(discord.ui.View):
             "確認しました、"
             f"{discord.utils.get(interaction.guild.channels,name="食堂").mention}"
             "へ移動し、しばらくお待ちください")
-        self.stop()
+        self.stop()#二度押し防止
         if gv.prog.ok_mati==0:
              await discord.utils.get(interaction.guild.channels,name="食堂").send(
                 "0日目の昼です、皆様、しばし御歓談ください\n"
@@ -113,6 +113,7 @@ class Night0(discord.ui.View):
     )
     async def start_night0(self,interaction:discord.Interaction,button:discord.ui.Button):
         #interactionへのresponseは呼び出したコマンド内でやるので不要
+        self.stop()#二度押し防止
         #コマンド呼び出し
         cog = self.bot.get_cog("Rehearsal")
         rehearsal_command = self.bot.get_cog("Rehearsal").get_app_commands()
@@ -131,8 +132,7 @@ class RehearsalEndConfirmationButton(discord.ui.View):
         style=discord.ButtonStyle.grey
     )
     async def item_discarded(self,interaction:discord.Interaction,button:discord.ui.Button):
-        button.style = discord.ButtonStyle.success
-        button.disabled=True
+        self.stop()#二度押し防止
         await interaction.response.send_message("確認しました、"
                 f"{discord.utils.get(interaction.guild.channels,name="食堂").mention}"
                 "へお戻りください"    
@@ -157,8 +157,7 @@ class NightStartButton(discord.ui.View):
         style=discord.ButtonStyle.grey
     )
     async def night_start(self,interaction:discord.Interaction,button:discord.ui.Button):
-        button.style = discord.ButtonStyle.success
-        button.disabled=True
+        self.stop()#二度押し防止
         await interaction.response.send_message(
             f"{gv.table_data.day_count}日目の夜時間が始まりました、"
             "夜時間のアイテムや能力使用をすべて確認したあと"            
@@ -188,12 +187,12 @@ class GoodNightButton(discord.ui.View):
         style=discord.ButtonStyle.danger
     )
     async def night_start(self,interaction:discord.Interaction,button:discord.ui.Button):
-        button.style = discord.ButtonStyle.gray
-        button.disabled=True
-        await interaction.response.send_message("")#赤文字回避
-        ctx = await self.bot.get_context(interaction.message)
-        ctx.command = self.bot.get_command('night')
-        await self.bot.invoke(ctx)
+        #interactionへのresponseは呼び出したapp_commandで行うのでここでは不要
+        self.stop()#二度押し防止
+        #コマンド呼び出し
+        cog = self.bot.get_cog("Night")
+        rehearsal_command = self.bot.get_cog("Night").get_app_commands()
+        await rehearsal_command[0].callback(cog,interaction)
 
 
 #夜時間の判別キャラクター能力使用ボタン
@@ -206,23 +205,23 @@ class NightIdentificationAbilitiesButton(discord.ui.View):
         label="霧切響子"
     )
     async def use_kirigiri_ability(self, interaction: discord.Interaction ,button: discord.ui.Button):
-        await interaction.response.send_message("")#インタラクションに失敗しました（赤い字）の表示を阻止
-        # ボタンを押したメンバーのコンテキストを作成
-        ctx = await self.bot.get_context(interaction.message)
-        ctx.author = interaction.user
-        ctx.command = self.bot.get_command('kirigiri')
-        await self.bot.invoke(ctx)
+        #interactionへのresponseは呼び出したapp_commandで行うのでここでは不要
+        self.stop()#二度押し防止
+        #コマンド呼び出し
+        cog = self.bot.get_cog("Kirigiri")
+        rehearsal_command = self.bot.get_cog("Kirigiri").get_app_commands()
+        await rehearsal_command[0].callback(cog,interaction)
 
     @discord.ui.button(
         label="葉隠康比呂"
     )
     async def use_hagakure_ability(self, interaction: discord.Interaction, button: discord.ui.Button):
-        await interaction.response.send_message("")#インタラクションに失敗しました（赤い字）の表示を阻止
-        # ボタンを押したメンバーのコンテキストを作成
-        ctx = await self.bot.get_context(interaction.message)
-        ctx.author = interaction.user
-        ctx.command = self.bot.get_command('hagakure')
-        await self.bot.invoke(ctx)
+        #interactionへのresponseは呼び出したapp_commandで行うのでここでは不要
+        self.stop()#二度押し防止
+        #コマンド呼び出し
+        cog = self.bot.get_cog("Hagakure")
+        rehearsal_command = self.bot.get_cog("Hagakure").get_app_commands()
+        await rehearsal_command[0].callback(cog,interaction)
 
 
 #夜時間の判別アイテム使用ボタン
@@ -235,34 +234,34 @@ class NightIdentificationItemsButton(discord.ui.View):
         label="無言電話"
     )
     async def use_silent_phone(self, interaction: discord.Interaction, button: discord.ui.Button):
-        await interaction.response.send_message("")#インタラクションに失敗しました（赤い字）の表示を阻止
-        # ボタンを押したメンバーのコンテキストを作成
-        ctx = await self.bot.get_context(interaction.message)
-        ctx.author = interaction.user
-        ctx.command = self.bot.get_command('silent_phone')
-        await self.bot.invoke(ctx)
+        #interactionへのresponseは呼び出したapp_commandで行うのでここでは不要
+        self.stop()#二度押し防止
+        #コマンド呼び出し
+        cog = self.bot.get_cog("SilentPhone")
+        rehearsal_command = self.bot.get_cog("SilentPhone").get_app_commands()
+        await rehearsal_command[0].callback(cog,interaction)
 
     @discord.ui.button(
         label="誰かの卒業アルバム"
     )
-    async def use_silent_phone(self, interaction: discord.Interaction, button: discord.ui.Button):
-        await interaction.response.send_message("")#インタラクションに失敗しました（赤い字）の表示を阻止
-        # ボタンを押したメンバーのコンテキストを作成
-        ctx = await self.bot.get_context(interaction.message)
-        ctx.author = interaction.user
-        ctx.command = self.bot.get_command('album')
-        await self.bot.invoke(ctx)
+    async def use_album(self, interaction: discord.Interaction, button: discord.ui.Button):
+        #interactionへのresponseは呼び出したapp_commandで行うのでここでは不要
+        self.stop()#二度押し防止
+        #コマンド呼び出し
+        cog = self.bot.get_cog("Album")
+        rehearsal_command = self.bot.get_cog("Album").get_app_commands()
+        await rehearsal_command[0].callback(cog,interaction)
 
     @discord.ui.button(
         label="おでこのメガネ"
     )
-    async def use_silent_phone(self, interaction: discord.Interaction, button: discord.ui.Button):
-        await interaction.response.send_message("")#インタラクションに失敗しました（赤い字）の表示を阻止
-        # ボタンを押したメンバーのコンテキストを作成
-        ctx = await self.bot.get_context(interaction.message)
-        ctx.author = interaction.user
-        ctx.command = self.bot.get_command('megane')
-        await self.bot.invoke(ctx)
+    async def use_megane(self, interaction: discord.Interaction, button: discord.ui.Button):
+        #interactionへのresponseは呼び出したapp_commandで行うのでここでは不要
+        self.stop()#二度押し防止
+        #コマンド呼び出し
+        cog = self.bot.get_cog("Megane")
+        rehearsal_command = self.bot.get_cog("Megane").get_app_commands()
+        await rehearsal_command[0].callback(cog,interaction)
 
 
 #夜時間の護衛アイテム使用ボタン
@@ -426,13 +425,13 @@ class UseKillrianCameraButton(discord.ui.View):
     @discord.ui.button(
         label="キルリアンカメラを使用する"
     )
-    async def use_silent_phone(self, interaction: discord.Interaction, button: discord.ui.Button):
-        await interaction.response.send_message("")#インタラクションに失敗しました（赤い字）の表示を阻止
-        # ボタンを押したメンバーのコンテキストを作成
-        ctx = await self.bot.get_context(interaction.message)
-        ctx.author = interaction.user
-        ctx.command = self.bot.get_command('killrian_camera')
-        await self.bot.invoke(ctx)
+    async def use_killrian_camera(self, interaction: discord.Interaction, button: discord.ui.Button):
+        #interactionへのresponseは呼び出したapp_commandで行うのでここでは不要
+        self.stop()#二度押し防止
+        #コマンド呼び出し
+        cog = self.bot.get_cog("KillrianCamera")
+        rehearsal_command = self.bot.get_cog("KillrianCamera").get_app_commands()
+        await rehearsal_command[0].callback(cog,interaction)
 
 
 #おしおきによる死亡の登録ボタン
