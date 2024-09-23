@@ -112,16 +112,11 @@ class Night0(discord.ui.View):
         style=discord.ButtonStyle.danger
     )
     async def start_night0(self,interaction:discord.Interaction,button:discord.ui.Button):
-        await interaction.response.edit_message(
-                "0日目の昼です、皆様、しばし御歓談ください\n"
-                "（キャラ能力説明等を行ってください\n"
-                "【夜時間を開始する】ボタンで夜時間が始まります）"
-        )#インタラクションに失敗しました（赤い字）の表示を阻止
+        #interactionへのresponseは呼び出したコマンド内でやるので不要
         #コマンド呼び出し
-        ctx = await self.bot.get_context(interaction.message)
-        ctx.command = self.bot.get_command("rehearsal")#ここでコマンドを指定
-        await self.bot.invoke(ctx)
-
+        cog = self.bot.get_cog("Rehearsal")
+        rehearsal_command = self.bot.get_cog("Rehearsal").get_app_commands()
+        await rehearsal_command[0].callback(cog,interaction)
 
 
 #下見処理（アイテム一枚捨てる）終了確認ボタン
