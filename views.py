@@ -191,8 +191,8 @@ class GoodNightButton(discord.ui.View):
         self.stop()#二度押し防止
         #コマンド呼び出し
         cog = self.bot.get_cog("Night")
-        rehearsal_command = self.bot.get_cog("Night").get_app_commands()
-        await rehearsal_command[0].callback(cog,interaction)
+        command = self.bot.get_cog("Night").get_app_commands()
+        await command[0].callback(cog,interaction)
 
 
 #夜時間の判別キャラクター能力使用ボタン
@@ -209,8 +209,8 @@ class NightIdentificationAbilitiesButton(discord.ui.View):
         self.stop()#二度押し防止
         #コマンド呼び出し
         cog = self.bot.get_cog("Kirigiri")
-        rehearsal_command = self.bot.get_cog("Kirigiri").get_app_commands()
-        await rehearsal_command[0].callback(cog,interaction)
+        command = self.bot.get_cog("Kirigiri").get_app_commands()
+        await command[0].callback(cog,interaction)
 
     @discord.ui.button(
         label="葉隠康比呂"
@@ -220,8 +220,8 @@ class NightIdentificationAbilitiesButton(discord.ui.View):
         self.stop()#二度押し防止
         #コマンド呼び出し
         cog = self.bot.get_cog("Hagakure")
-        rehearsal_command = self.bot.get_cog("Hagakure").get_app_commands()
-        await rehearsal_command[0].callback(cog,interaction)
+        command = self.bot.get_cog("Hagakure").get_app_commands()
+        await command[0].callback(cog,interaction)
 
 
 #夜時間の判別アイテム使用ボタン
@@ -238,8 +238,8 @@ class NightIdentificationItemsButton(discord.ui.View):
         self.stop()#二度押し防止
         #コマンド呼び出し
         cog = self.bot.get_cog("SilentPhone")
-        rehearsal_command = self.bot.get_cog("SilentPhone").get_app_commands()
-        await rehearsal_command[0].callback(cog,interaction)
+        command = self.bot.get_cog("SilentPhone").get_app_commands()
+        await command[0].callback(cog,interaction)
 
     @discord.ui.button(
         label="誰かの卒業アルバム"
@@ -249,8 +249,8 @@ class NightIdentificationItemsButton(discord.ui.View):
         self.stop()#二度押し防止
         #コマンド呼び出し
         cog = self.bot.get_cog("Album")
-        rehearsal_command = self.bot.get_cog("Album").get_app_commands()
-        await rehearsal_command[0].callback(cog,interaction)
+        command = self.bot.get_cog("Album").get_app_commands()
+        await command[0].callback(cog,interaction)
 
     @discord.ui.button(
         label="おでこのメガネ"
@@ -260,8 +260,8 @@ class NightIdentificationItemsButton(discord.ui.View):
         self.stop()#二度押し防止
         #コマンド呼び出し
         cog = self.bot.get_cog("Megane")
-        rehearsal_command = self.bot.get_cog("Megane").get_app_commands()
-        await rehearsal_command[0].callback(cog,interaction)
+        command = self.bot.get_cog("Megane").get_app_commands()
+        await command[0].callback(cog,interaction)
 
 
 #夜時間の護衛アイテム使用ボタン
@@ -430,8 +430,8 @@ class UseKillrianCameraButton(discord.ui.View):
         self.stop()#二度押し防止
         #コマンド呼び出し
         cog = self.bot.get_cog("KillrianCamera")
-        rehearsal_command = self.bot.get_cog("KillrianCamera").get_app_commands()
-        await rehearsal_command[0].callback(cog,interaction)
+        command = self.bot.get_cog("KillrianCamera").get_app_commands()
+        await command[0].callback(cog,interaction)
 
 
 #おしおきによる死亡の登録ボタン
