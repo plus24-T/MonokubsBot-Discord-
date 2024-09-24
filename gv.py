@@ -36,8 +36,8 @@ class CharaRole(Enum):
     @classmethod
     def get_despair_threshold(self,any_member_died : bool):
         if any_member_died:
-            return CharaRole.MIRAIKIKAN
-        return CharaRole.TYOZETSUBO
+            return CharaRole.MIRAIKIKAN.value
+        return CharaRole.TYOZETSUBO.value
 
 # 変換用辞書
 _nameDict : dict = {

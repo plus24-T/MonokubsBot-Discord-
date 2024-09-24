@@ -34,7 +34,7 @@ def check_despair(interaction: discord.Interaction, target_chara_name : str) -> 
     despair_threshold = gv.CharaRole.get_despair_threshold(any_member_died)
     target_role = gv.get_chara_data(target_chara_name).role
     
-    if target_role.value <= despair_threshold.value:
+    if target_role.value <= despair_threshold:
         return False
     else:
         if target_role != gv.CharaRole.KURO:
