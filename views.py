@@ -54,6 +54,7 @@ class RoleSleMenu(discord.ui.View):
                 )
         #全員の登録が終わったらクロと裏切者を各裏切者に通知
         if gv.prog.role_registered == gv.table_data.player_count:
+            await discord.utils.get(interaction.guild.channels,name="入学手続き（プレイヤー情報登録）").purge(limit=5)
             if len(gv.chara_role_list.uragiri)==0:#裏切者欠け（居ない）時の処理
                 await discord.utils.get(interaction.guild.channels,name="食堂").send(
                     "0日目の昼です、皆様、しばし御歓談ください\n"
