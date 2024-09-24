@@ -174,6 +174,10 @@ class NightStartButton(discord.ui.View):
             "判別系アイテムを使用するときはこのボタンを押してください",
             view=NightIdentificationItemsButton(self.bot)
         )
+        await interaction.followup.send(
+            "襲撃無効系アイテムを使用するときはこのボタンを押してください",
+            view=NightEscortItemsButton(self.bot)
+        )
 
 
 #夜時間の役職能力処理開始ボタン（おやすみなさいボタン）
