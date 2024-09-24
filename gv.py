@@ -34,7 +34,7 @@ class CharaRole(Enum):
     
     # 希望判定をする閾値（Enumのインデックス）を取得
     @classmethod
-    def get_despair_threshold(any_member_died : bool):
+    def get_despair_threshold(self,any_member_died : bool):
         if any_member_died:
             return CharaRole.MIRAIKIKAN
         return CharaRole.TYOZETSUBO
