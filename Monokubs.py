@@ -124,10 +124,10 @@ async def on_member_update(before:discord.Member, after:discord.Member):
     if not added_roles.isdisjoint([ROLE_DIE]):
         if gv.get_chara_data(after.nick).role == gv.CharaRole.KURO:
             await discord.utils.get(guild.channels,name="食堂").send(f"『{after.nick}』はクロでした\n\n希望サイドの勝利です")
-            gv.CharaData.__init__()
-            gv.chara_role_list.__init__()
-            gv.table_data.__init__()
-            gv.prog.__init__()
+            gv.CharaData.reset()
+            gv.chara_role_list.reset()
+            gv.table_data.reset()
+            gv.prog.reset()
 
 #プレイヤー人数登録
 class PlayerCountRegistration(discord.ui.View):

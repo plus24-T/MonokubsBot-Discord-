@@ -69,6 +69,9 @@ class CharaData:
     escorted : bool = False #襲撃無効が付与されているか（True：されている、False：されていない）
     position : int = 0 #席の位置、生存人数の剰余で隣り合っているか判定する
 
+    def reset(self):
+        self.__init__()
+
 CC_02 = CharaData()
 CC_03 = CharaData()
 CC_04 = CharaData()
@@ -113,6 +116,7 @@ MCC_07 = CharaData()
 MCC_08 = CharaData()
 MCC_09 = CharaData()
 MCC_10 = CharaData()
+
 
 #キャラ名からデータクラスへの変換辞書
 _nickToDataDic={
@@ -179,6 +183,9 @@ class CharaRoleList:
     zako:list[discord.Member]=dataclasses.field(default_factory=list)
     zantou:list[discord.Member]=dataclasses.field(default_factory=list)
 
+    def reset(self):
+        self.__init__()
+
 chara_role_list = CharaRoleList()
 
 #ゲーム進行にまつわる変数
@@ -193,6 +200,9 @@ class TableData:
     successful_attack : bool = False
     vise_effect : bool = False
 
+    def reset(self):
+        self.__init__()
+
 table_data = TableData()
 
 #出揃い待ち用の進行用の変数
@@ -201,5 +211,8 @@ class ProgressData:
     role_registered : int = 0 #役職登録済みプレイヤー数（全員登録終わってからにクロ裏切者通知する用
     remaining_processes : int = 0 #夜時間に処理する対象選択や判別の数、全て処理してから相互作用の確認後、朝へ
     ok_mati : int = 0 #裏切者の開始時情報確認待ち用、全員確認したら0日目の昼を開始する
+
+    def reset(self):
+        self.__init__()
 
 prog = ProgressData()
