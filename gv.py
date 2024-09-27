@@ -187,6 +187,9 @@ class TableData:
     player_count : int = 0 #（ゲームに参加しない場合のGMを除いた）プレイヤー数
     kill_count : int = 0 #　殺害数（ゲーム終了トリガーとして参照
     day_count : int = 0 #　何日目か（能力使用の条件として参照、司会進行メッセージで参照
+    osoware_yatsu : str = "" #夜時間のクロの襲撃対象
+    altered_yatsu : str = "" #夜時間のアルターエゴの判別対象
+    mamorare_yatsu : str = "" #夜時間のモノミの護衛対象
 
 table_data = TableData()
 

@@ -27,7 +27,7 @@ class Night_Select(discord.ui.Select):#1人選んでそれぞれの能力の対�
         #クロの処理
         if user_role == gv.CharaRole.KURO:
             gv.prog.remaining_processes -= 1
-            osoware_yatsu=self.values[0]
+            gv.table_data.osoware_yatsu=self.values[0]
             await interaction.response.send_message(
                 f"『{self.values[0]}』を襲撃することにしました\n"
                 f"何食わぬ顔で{discord.utils.get(interaction.guild.channels,name="食堂").mention}へ戻ろう"
@@ -35,7 +35,7 @@ class Night_Select(discord.ui.Select):#1人選んでそれぞれの能力の対�
         #モノミの処理
         elif user_role == gv.CharaRole.MONOMI:
             gv.prog.remaining_processes -= 1
-            mamorare_yatsu=self.values[0]
+            gv.table_data.mamorare_yatsu=self.values[0]
             await interaction.response.send_message(
                 f"モノミと共に『{self.values[0]}』の部屋の前で夜通し見張ることにしました\n"
                 f"{discord.utils.get(interaction.guild.channels,name="食堂").mention}へ戻ろう"
@@ -43,9 +43,9 @@ class Night_Select(discord.ui.Select):#1人選んでそれぞれの能力の対�
         #アルターエゴの処理
         elif user_role == gv.CharaRole.ALTEREGO:
             gv.prog.remaining_processes -= 1
-            altered_yatsu=self.values[0]
+            gv.table_data.altered_yatsu=self.values[0]
 
-            target_chara_name = altered_yatsu
+            target_chara_name = gv.table_data.altered_yatsu
             is_despair = utils.check_despair(interaction, target_chara_name)
             if is_despair:
                 await interaction.response.send_message(
@@ -61,18 +61,18 @@ class Night_Select(discord.ui.Select):#1人選んでそれぞれの能力の対�
         #出揃ったあとの相互作用の確認及び朝時間突入の通知
         if gv.prog.remaining_processes == 0:#対象選択全部終わったら
             #残党の占死確認
-            if gv.get_chara_data(altered_yatsu).role == gv.CharaRole.ZANTOU:
+            if gv.get_chara_data(gv.table_data.altered_yatsu).role == gv.CharaRole.ZANTOU:
                 cursed_killing:bool=True
 
             else:
                 cursed_killing:bool=False
             #モノミの爆死確認、襲撃先の不在（占死済み）確認
             if cursed_killing:
-                if osoware_yatsu==altered_yatsu:
+                if gv.table_data.osoware_yatsu==gv.table_data.altered_yatsu:
                     absence:bool=True
                     exploded:bool=False
             else:
-                if osoware_yatsu==mamorare_yatsu:
+                if gv.table_data.osoware_yatsu==gv.table_data.mamorare_yatsu:
                     absence:bool=False
                     exploded:bool=True
                 else:
@@ -83,7 +83,7 @@ class Night_Select(discord.ui.Select):#1人選んでそれぞれの能力の対�
             await discord.utils.get(interaction.guild.channels,name="食堂").send(f"オハヨウゴザイマス\n{gv.table_data.day_count}日目の朝時間になりました")
             #残党占死メッセージおよび死亡ロール付与
             if cursed_killing:
-                await discord.utils.get(interaction.guild.channels,name="食堂").send(f"{altered_yatsu}の姿が見当たりませんね\n（アルターエゴの判別対象が絶望の残党だったため死亡しました）")
+                await discord.utils.get(interaction.guild.channels,name="食堂").send(f"{gv.table_data.altered_yatsu}の姿が見当たりませんね\n（アルターエゴの判別対象が絶望の残党だったため死亡しました）")
                 gv.chara_role_list.zantou[0].remove_roles(discord.utils.get(interaction.guild.roles,name="生存"))
                 gv.chara_role_list.zantou[0].add_roles(discord.utils.get(interaction.guild.roles,name="死亡"))
                 #襲撃対象不在時（対象が残党で夜のうちに占死）メッセージ
@@ -102,19 +102,19 @@ class Night_Select(discord.ui.Select):#1人選んでそれぞれの能力の対�
                 else:
                     #襲撃先発表メッセージ
                     await discord.utils.get(interaction.guild.channels,name="食堂").send(
-                        f"{osoware_yatsu}が襲撃されました"
+                        f"{gv.table_data.osoware_yatsu}が襲撃されました"
                         )
                     #襲撃無効メッセージ
-                    if gv.get_chara_data(osoware_yatsu).escorted:
+                    if gv.get_chara_data(gv.table_data.osoware_yatsu).escorted:
                         await discord.utils.get(interaction.guild.channels,name="食堂").send(
-                            f"しかし{osoware_yatsu}には襲撃無効が付与されていたため\n襲撃は無効になりました",
+                            f"しかし{gv.table_data.osoware_yatsu}には襲撃無効が付与されていたため\n襲撃は無効になりました",
                             view=views.DaytimeStartButton(self.bot)
                             )
                     else:
                         #モノミ爆死メッセージおよび死亡ロール付与        
                         if exploded:
                             await discord.utils.get(interaction.guild.channels,name="食堂").send(
-                                f"が！\n{gv.chara_role_list.monomi[0].nick}がモノミと共に身を挺して守ったため\n{osoware_yatsu}は助かりました\nしかし{gv.chara_role_list.monomi[0].nick}はモノミと共に爆死してしまったようです",
+                                f"が！\n{gv.chara_role_list.monomi[0].nick}がモノミと共に身を挺して守ったため\n{gv.table_data.osoware_yatsu}は助かりました\nしかし{gv.chara_role_list.monomi[0].nick}はモノミと共に爆死してしまったようです",
                                 view=views.DaytimeStartButton(self.bot)
                                 )
                             gv.chara_role_list.monomi[0].remove_roles(discord.utils.get(interaction.guild.roles,name="生存"))
@@ -130,6 +130,10 @@ class Night_Select(discord.ui.Select):#1人選んでそれぞれの能力の対�
             #襲撃無効効果リセット
             for member in discord.utils.get(interaction.guild.roles,name="生存").members:
                 gv.get_chara_data(member.nick).escorted=False
+            #役職能力の対象リセット
+            gv.table_data.osoware_yatsu=""
+            gv.table_data.altered_yatsu=""
+            gv.table_data.mamorare_yatsu=""
 
 #選択対象渡しView       
 class Night_View(discord.ui.View):
