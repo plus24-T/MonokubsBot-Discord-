@@ -332,8 +332,6 @@ class IAmKilledButton(discord.ui.View):
         disabled=False
     )
     async def i_am_killed(self,interaction:discord.Interaction,button:discord.ui.Button):
-        button.style=discord.ButtonStyle.success
-        button.disabled=True
         chara_name=interaction.user.nick
         gv.table_data.kill_count+=1
         gv.prog.successful_attack=True
@@ -398,8 +396,6 @@ class DaytimeStartButton(discord.ui.View):
         disabled=False
     )
     async def start_daytime(self,interaction:discord.Interaction,button:discord.ui.Button):
-        button.style=discord.ButtonStyle.success
-        button.disabled=True
         if gv.prog.successful_attack:
             gv.prog.successful_attack=False
             await interaction.response.send_message(
@@ -454,8 +450,6 @@ class IAmPunishedButton(discord.ui.View):
         disabled=False
     )
     async def i_am_punished(self,interaction:discord.Interaction,button:discord.ui.Button):
-        button.style=discord.ButtonStyle.success
-        button.disabled=True
         chara_name=interaction.user.nick
         await interaction.response.send_message(
             f"{chara_name}はおしおきされました"
