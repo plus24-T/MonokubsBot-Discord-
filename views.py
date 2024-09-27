@@ -346,8 +346,12 @@ class IAmKilledButton(discord.ui.View):
             pass
         else:
             await interaction.followup.send(
-                "罪木蜜柑の能力を使用する場合は\n罪木蜜柑がこのボタンを押してください",
+                "罪木蜜柑の能力を使用するときは\n罪木蜜柑がこのボタンを押してください",
                 view=TsumikiAbilityButton(target=interaction.user)
+            )
+            await interaction.followup.send(
+                "万力を使用するときはこのボタンを押してください",
+                view=UseViseButton(self.bot)
             )
             await interaction.followup.send(
                 "以下のボタンを押して昼時間を開始してください",
