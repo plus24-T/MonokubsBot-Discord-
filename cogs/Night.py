@@ -127,6 +127,10 @@ class Night_Select(discord.ui.Select):#1人選んでそれぞれの能力の対�
                                 "襲撃によって死亡した人は【殺られた～】ボタンを押してください",
                                 view=views.IAmKilledButton(self.bot)
                                 )
+                            await discord.utils.get(interaction.guild.channels,name="食堂").send(
+                                "生き延びた場合はこのボタンを押して昼時間を開始してください",
+                                view=views.DaytimeStartButton(self.bot)
+                            )
             #襲撃無効効果リセット
             for member in discord.utils.get(interaction.guild.roles,name="生存").members:
                 gv.get_chara_data(member.nick).escorted=False
