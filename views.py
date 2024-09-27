@@ -350,7 +350,7 @@ class IAmKilledButton(discord.ui.View):
             )
             await interaction.followup.send(
                 "万力を使用するときはこのボタンを押してください",
-                view=UseViseButton(self.bot)
+                view=UseViseButton()
             )
             await interaction.followup.send(
                 "以下のボタンを押して昼時間を開始してください",
