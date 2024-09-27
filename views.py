@@ -467,10 +467,6 @@ class IAmPunishedButton(discord.ui.View):
                         await interaction.followup.send("規定殺害数を達成しました\n\nクロの勝利です")
                 else:
                     await interaction.followup.send(
-                        "万力を使用する場合は以下のボタンを押してください",
-                        view=UseViseButton()
-                    )
-                    await interaction.followup.send(
                         "以下のボタンを押して夜時間を開始してください",
                         view=NightStartButton(self.bot)
                     )
