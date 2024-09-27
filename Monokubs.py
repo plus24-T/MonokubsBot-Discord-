@@ -346,7 +346,6 @@ async def hello(interaction: discord.Interaction):
 async def text_channel_cleaning(interaction: discord.Interaction): 
     await interaction.response.defer()
     await interaction.channel.purge(limit=100)
-    await interaction.followup.send("お掃除完了",ephemeral=True)
 
 #おしおき先投票機能（キャラアビ、アイテム未考慮）
 
