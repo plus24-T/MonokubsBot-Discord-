@@ -93,12 +93,12 @@ class Night_Select(discord.ui.Select):#1人選んでそれぞれの能力の対�
                     view=views.DaytimeStartButton(self.bot)
                     )
             else:
-                if gv.prog.vise_effect:
+                if gv.table_data.vise_effect:
                     await discord.utils.get(interaction.guild.channels,name="食堂").send(
                     "昨夜はクロによる襲撃はありませんでした",
                     view=views.DaytimeStartButton
                     )
-                    gv.prog.vise_effect=False
+                    gv.table_data.vise_effect=False
                 else:
                     #襲撃先発表メッセージ
                     await discord.utils.get(interaction.guild.channels,name="食堂").send(
@@ -119,7 +119,7 @@ class Night_Select(discord.ui.Select):#1人選んでそれぞれの能力の対�
                                 )
                             gv.chara_role_list.monomi[0].remove_roles(discord.utils.get(interaction.guild.roles,name="生存"))
                             gv.table_data.kill_count+=1
-                            gv.prog.successful_attack=True
+                            gv.table_data.successful_attack=True
                             gv.chara_role_list.monomi[0].add_roles(discord.utils.get(interaction.guild.roles,name="死亡"))
                         else:
                             await discord.utils.get(interaction.guild.channels,name="食堂").send(
@@ -164,7 +164,7 @@ class Night(commands.Cog):
         #共通チャンネルに投稿
         await interaction.response.send_message("消灯時間になりました、おやすみなさい\n夜が明けるまでしばらくお待ちください")
         #クロのプライベートチャンネルに投稿
-        if gv.prog.vise_effect:
+        if gv.table_data.vise_effect:
             await interaction.followup.send("万力の効果により今夜はクロの襲撃はありません")
         else:
             gv.prog.remaining_processes += 1 #後々アイテム効果で行なえない可能性があるのでちゃんと数えておく

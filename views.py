@@ -334,7 +334,7 @@ class IAmKilledButton(discord.ui.View):
     async def i_am_killed(self,interaction:discord.Interaction,button:discord.ui.Button):
         chara_name=interaction.user.nick
         gv.table_data.kill_count+=1
-        gv.prog.successful_attack=True
+        gv.table_data.successful_attack=True
         await interaction.response.send_message(
             f"{chara_name}は死亡しました"
         )
@@ -396,8 +396,8 @@ class DaytimeStartButton(discord.ui.View):
         disabled=False
     )
     async def start_daytime(self,interaction:discord.Interaction,button:discord.ui.Button):
-        if gv.prog.successful_attack:
-            gv.prog.successful_attack=False
+        if gv.table_data.successful_attack:
+            gv.table_data.successful_attack=False
             await interaction.response.send_message(
                 f"{gv.table_data.day_count}日目の昼時間になりました\n"
                 "昼時間のアイテムや能力の使用を確認したあと、学級裁判（議論3分）を行い\n"
@@ -486,7 +486,7 @@ class UseViseButton(discord.ui.View):
         disabled=False
     )
     async def use_vise(self,interaction:discord.Interaction,button:discord.ui.Button):
-        gv.prog.vise_effect = True
+        gv.table_data.vise_effect = True
         await interaction.response.send_message(
             f"{interaction.user.nick}は万力を使用しました\n"
             "クロは今夜襲撃を行うことができません"

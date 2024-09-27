@@ -190,6 +190,8 @@ class TableData:
     osoware_yatsu : str = "" #夜時間のクロの襲撃対象
     altered_yatsu : str = "" #夜時間のアルターエゴの判別対象
     mamorare_yatsu : str = "" #夜時間のモノミの護衛対象
+    successful_attack : bool = False
+    vise_effect : bool = False
 
 table_data = TableData()
 
@@ -199,7 +201,5 @@ class ProgressData:
     role_registered : int = 0 #役職登録済みプレイヤー数（全員登録終わってからにクロ裏切者通知する用
     remaining_processes : int = 0 #夜時間に処理する対象選択や判別の数、全て処理してから相互作用の確認後、朝へ
     ok_mati : int = 0 #裏切者の開始時情報確認待ち用、全員確認したら0日目の昼を開始する
-    successful_attack : bool = False
-    vise_effect : bool = False
 
 prog = ProgressData()
