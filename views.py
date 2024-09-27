@@ -343,9 +343,10 @@ class IAmKilledButton(discord.ui.View):
         if gv.get_chara_data(chara_name).role==gv.CharaRole.KURO:
             pass
         else:
+            target=interaction.user
             await interaction.followup.send(
                 "罪木蜜柑の能力を使用するときは\n罪木蜜柑がこのボタンを押してください",
-                view=TsumikiAbilityButton(target=interaction.user)
+                view=TsumikiAbilityButton(target)
             )
             await interaction.followup.send(
                 "万力を使用するときはこのボタンを押してください",
@@ -359,25 +360,25 @@ class IAmKilledButton(discord.ui.View):
 
 #罪木蜜柑の能力使用ボタン
 class TsumikiAbilityButton(discord.ui.View):
-    def __init__(self):
+    def __init__(self,target : discord.Member):
         super().__init__(timeout=None)
+        self.target=target
     @discord.ui.button(
         label="罪木蜜柑の能力を使用",
         style=discord.ButtonStyle.gray,
         disabled=False
     )
-    async def use_tsumiki_ability(self,interaction:discord.Interaction,button:discord.ui.Button,target:discord.Member):
+    async def use_tsumiki_ability(self,interaction:discord.Interaction,button:discord.ui.Button):
         if interaction.user.nick != "罪木蜜柑":
             await interaction.response.send_message("あなたは罪木蜜柑ではありません",ephemeral=True)
         else:
-            button.style=discord.ButtonStyle.success
-            button.disabled=True
+            target_name=(self.target.nick)
             await interaction.response.send_message(
                 "罪木蜜柑の能力を使用しました、"
-                f"罪木蜜柑は{target.nick}の役職を確認できます"
+                f"罪木蜜柑は{target_name}の役職を確認できます"
                 )
             await discord.utils.get(interaction.guild.channels,name="罪木蜜柑").send(
-                f"{target.nick}は{gv.get_chara_data(target.nick).role.to_japanese_name}です"
+                f"{target_name}は{gv.get_chara_data(target_name).role.to_japanese_name}です"
             )
             await interaction.followup.send(
                 f"{discord.utils.get(interaction.guild.channels,name="罪木蜜柑").mention}で判別結果を確認してください",
