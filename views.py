@@ -436,7 +436,6 @@ class UseKillrianCameraButton(discord.ui.View):
     )
     async def use_killrian_camera(self, interaction: discord.Interaction, button: discord.ui.Button):
         #interactionへのresponseは呼び出したapp_commandで行うのでここでは不要
-        self.stop()#二度押し防止
         #コマンド呼び出し
         cog = self.bot.get_cog("KillrianCamera")
         command = self.bot.get_cog("KillrianCamera").get_app_commands()
