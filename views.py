@@ -315,9 +315,8 @@ class JusticeRobot_Select(discord.ui.Select):
         )
   
 class JusticeRobot_View(discord.ui.View):
-    def __init__(self, bot : commands.Bot, options:list[discord.SelectOption]):
+    def __init__(self, options:list[discord.SelectOption]):
         super().__init__(timeout=None)
-        self.bot = bot
         self.add_item(JusticeRobot_Select(options=options))
 
 
