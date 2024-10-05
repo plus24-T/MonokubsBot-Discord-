@@ -464,7 +464,7 @@ class IAmPunishedButton(discord.ui.View):
         else:
             if gv.get_chara_data(chara_name).role == gv.CharaRole.TYOZETSUBO:
                     await interaction.followup.send(f"{chara_name}は超高校級の絶望でした\n\n{chara_name}の勝利です")
-                    gv.CharaData.reset()
+                    gv.CharaData.__init__()
                     gv.chara_role_list.reset()
                     gv.table_data.reset()
                     gv.prog.reset()
@@ -472,7 +472,7 @@ class IAmPunishedButton(discord.ui.View):
                 if gv.table_data.kill_count==(gv.table_data.player_count-1)//3:
                     if discord.utils.get(interaction.guild.roles,name="生存") in gv.chara_role_list.kuro[0].roles:
                         await interaction.followup.send("規定殺害数を達成しました\n\nクロの勝利です")
-                        gv.CharaData.reset()
+                        gv.CharaData.__init__()
                         gv.chara_role_list.reset()
                         gv.table_data.reset()
                         gv.prog.reset()

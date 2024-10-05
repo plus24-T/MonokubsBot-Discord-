@@ -69,9 +69,6 @@ class CharaData:
     escorted : bool = False #襲撃無効が付与されているか（True：されている、False：されていない）
     position : int = 0 #席の位置、生存人数の剰余で隣り合っているか判定する
 
-    def reset(self):
-        self.__init__()
-
 CC_02 = CharaData()
 CC_03 = CharaData()
 CC_04 = CharaData()
