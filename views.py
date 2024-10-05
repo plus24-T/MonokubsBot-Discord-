@@ -419,6 +419,10 @@ class DaytimeStartButton(discord.ui.View):
                 "以下の【夜時間の開始】ボタンを押してください",
                 view=NightStartButton(self.bot)
             )
+            await interaction.followup.send(
+                "昼時間開始時にキルリアンカメラを使用するときはこのボタンを押してください",
+                view=UseKillrianCameraButton(self.bot)
+            )
 
 
 #キルリアンカメラ使用ボタン
