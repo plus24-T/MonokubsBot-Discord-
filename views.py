@@ -377,7 +377,7 @@ class TsumikiAbilityButton(discord.ui.View):
                 f"罪木蜜柑は{target_name}の役職を確認できます"
                 )
             await discord.utils.get(interaction.guild.channels,name="罪木蜜柑").send(
-                f"{target_name}は{gv.get_chara_data(target_name).role.to_japanese_name}です"
+                f"{target_name}は{gv.get_chara_data(target_name).role.to_japanese_name()}です"
             )
             await interaction.followup.send(
                 f"{discord.utils.get(interaction.guild.channels,name="罪木蜜柑").mention}で判別結果を確認してください",
